@@ -1,0 +1,2694 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple-Inspired Gimkit Arcade & AI Study Suite</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans & Newsreader -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Three.js for 3D Game & Canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        :root {
+            --surface-canvas: #f6f5f2;
+            --surface-card: rgba(255, 255, 255, 0.85);
+            --surface-muted: rgba(0, 0, 0, 0.03);
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --text-main: #1c1917;
+            --text-muted: #78716c;
+            --accent: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --radius-card: 1.5rem;
+            --radius-btn: 1rem;
+        }
+
+        body.theme-dark {
+            --surface-canvas: #0f1115;
+            --surface-card: rgba(20, 24, 33, 0.92);
+            --surface-muted: rgba(255, 255, 255, 0.05);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        body.theme-cyber {
+            --surface-canvas: #05050a;
+            --surface-card: rgba(13, 15, 28, 0.95);
+            --surface-muted: rgba(0, 255, 128, 0.08);
+            --border-subtle: rgba(0, 255, 128, 0.4);
+            --text-main: #00ff80;
+            --text-muted: #ff007f;
+            --accent: #00ff80;
+            --accent-gradient: linear-gradient(135deg, #00ff80 0%, #ff007f 100%);
+        }
+
+        body.theme-cyber .glass-panel {
+            background: rgba(13, 15, 28, 0.95);
+            border: 2px solid #00ff80;
+            box-shadow: 0 0 25px rgba(0, 255, 128, 0.35), inset 0 0 15px rgba(255, 0, 127, 0.15);
+            color: #00ff80;
+        }
+
+        body.theme-cyber .glass-pill {
+            background: rgba(0, 255, 128, 0.1);
+            border: 1px solid #ff007f;
+            color: #00ff80;
+        }
+
+        /* High-contrast neon styling for top navigation buttons in Cyberpunk Neon (Pink Text with Green Outline Box) */
+        body.theme-cyber header button {
+            background: rgba(13, 15, 28, 0.9) !important;
+            border: 2px solid #00ff80 !important;
+            color: #ff007f !important;
+            box-shadow: 0 0 15px rgba(0, 255, 128, 0.45) !important;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.9) !important;
+        }
+
+        body.theme-cyber header button:hover {
+            background: rgba(0, 255, 128, 0.15) !important;
+            border-color: #ff007f !important;
+            color: #00ff80 !important;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.6) !important;
+            text-shadow: 0 0 10px rgba(0, 255, 128, 0.9) !important;
+        }
+
+        body.theme-cyber header button i {
+            color: #ff007f !important;
+            text-shadow: 0 0 8px rgba(255, 0, 127, 0.9) !important;
+        }
+
+        body.theme-cyber header button:hover i {
+            color: #00ff80 !important;
+            text-shadow: 0 0 10px rgba(0, 255, 128, 0.9) !important;
+        }
+
+        body.theme-cyber h1, 
+        body.theme-cyber h2, 
+        body.theme-cyber h3, 
+        body.theme-cyber h4,
+        body.theme-cyber h5,
+        body.theme-cyber span,
+        body.theme-cyber p,
+        body.theme-cyber label {
+            color: #00ff80 !important;
+            text-shadow: 0 0 8px rgba(0, 255, 128, 0.5);
+        }
+
+        /* Make Games Arcade icons green ONLY in Cyberpunk Neon theme */
+        body.theme-cyber .fa-play {
+            color: #00ff80 !important;
+            text-shadow: 0 0 10px rgba(0, 255, 128, 0.9) !important;
+        }
+
+        body:not(.theme-cyber) .fa-play {
+            color: inherit !important;
+            text-shadow: none !important;
+        }
+
+        body.theme-cyber .fa-arrow-right {
+            color: #00ff80 !important;
+            text-shadow: 0 0 10px rgba(0, 255, 128, 0.9) !important;
+        }
+
+        /* Homepage specific pink text accents for Cyberpunk Neon theme */
+        body.theme-cyber #home-dashboard h1 {
+            color: #ff007f !important;
+            text-shadow: 0 0 12px rgba(255, 0, 127, 0.7);
+        }
+
+        body.theme-cyber #home-dashboard p,
+        body.theme-cyber #home-dashboard span {
+            color: #00ff80 !important;
+        }
+
+        body.theme-cyber #home-dashboard .glass-panel:nth-child(2) h3 {
+            color: #00ff80 !important;
+            text-shadow: 0 0 10px rgba(0, 255, 128, 0.8) !important;
+        }
+
+        body.theme-cyber button {
+            color: #05050a !important;
+            text-shadow: none;
+            font-weight: 800;
+        }
+
+        body.theme-cyber button span,
+        body.theme-cyber button i {
+            color: inherit !important;
+        }
+
+        /* Specific fix for Modal Close and Tab buttons in Cyberpunk Neon */
+        body.theme-cyber #quiz-selector-modal button[onclick*="close"],
+        body.theme-cyber #games-selector-modal button[onclick*="close"],
+        body.theme-cyber #history-modal button[onclick*="close"],
+        body.theme-cyber #profile-modal button[onclick*="close"],
+        body.theme-cyber #theme-modal button[onclick*="close"],
+        body.theme-cyber #auth-modal button[onclick*="close"],
+        body.theme-cyber #signout-modal button[onclick*="close"] {
+            background-color: #00ff80 !important;
+            color: #05050a !important;
+            border: 1px solid #ff007f !important;
+            box-shadow: 0 0 12px rgba(0, 255, 128, 0.6);
+        }
+
+        body.theme-cyber #quiz-selector-modal button[onclick*="close"] i,
+        body.theme-cyber #games-selector-modal button[onclick*="close"] i,
+        body.theme-cyber #history-modal button[onclick*="close"] i,
+        body.theme-cyber #profile-modal button[onclick*="close"] i,
+        body.theme-cyber #theme-modal button[onclick*="close"] i,
+        body.theme-cyber #auth-modal button[onclick*="close"] i,
+        body.theme-cyber #signout-modal button[onclick*="close"] i {
+            color: #05050a !important;
+            font-weight: 900;
+        }
+
+        /* Modal navigation tabs in Cyberpunk Neon */
+        body.theme-cyber #quiz-selector-modal button[onclick*="switchQuizSourceTab"],
+        body.theme-cyber #games-selector-modal button[onclick*="switchGameSourceTab"],
+        body.theme-cyber #history-modal button[onclick*="switchHistoryTab"],
+        body.theme-cyber #profile-modal button[onclick*="switchProfileTab"] {
+            color: #ff007f !important;
+            border-color: #ff007f !important;
+            text-shadow: 0 0 6px rgba(255, 0, 127, 0.6);
+        }
+
+        body.theme-cyber #quiz-selector-modal button[onclick*="switchQuizSourceTab"].border-blue-600,
+        body.theme-cyber #games-selector-modal button[onclick*="switchGameSourceTab"].border-purple-600,
+        body.theme-cyber #history-modal button[onclick*="switchHistoryTab"].border-purple-600,
+        body.theme-cyber #profile-modal button[onclick*="switchProfileTab"].border-blue-600 {
+            color: #00ff80 !important;
+            border-color: #00ff80 !important;
+            text-shadow: 0 0 10px rgba(0, 255, 128, 0.8);
+        }
+
+        body.theme-cyber input,
+        body.theme-cyber textarea {
+            background-color: rgba(5, 5, 10, 0.85) !important;
+            border-color: #00ff80 !important;
+            color: #00ff80 !important;
+            box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
+        }
+
+        body.theme-cyber input::placeholder,
+        body.theme-cyber textarea::placeholder {
+            color: #ff007f !important;
+            opacity: 0.85;
+        }
+
+        body.theme-pastel {
+            --surface-canvas: #fce4ec;
+            --surface-card: rgba(253, 224, 239, 0.98);
+            --surface-muted: rgba(236, 72, 153, 0.18);
+            --border-subtle: rgba(168, 85, 247, 0.45);
+            --text-main: #581c87;
+            --text-muted: #7e22ce;
+            --accent: #ec4899;
+            --accent-gradient: linear-gradient(135deg, #ec4899 0%, #9333ea 100%);
+        }
+
+        body.theme-pastel .glass-panel {
+            background: linear-gradient(135deg, rgba(252, 211, 225, 0.95) 0%, rgba(233, 213, 255, 0.95) 100%);
+            border: 2px solid rgba(192, 132, 252, 0.6);
+            box-shadow: 0 12px 35px 0 rgba(236, 72, 153, 0.25);
+        }
+
+        body.theme-pastel .glass-pill {
+            background: rgba(244, 114, 182, 0.25);
+            border: 1px solid rgba(192, 132, 252, 0.6);
+            color: #581c87;
+        }
+
+        body.theme-pastel button {
+            color: #581c87;
+        }
+
+        body.theme-pastel input,
+        body.theme-pastel textarea {
+            background-color: rgba(250, 232, 255, 0.6) !important;
+            border-color: rgba(192, 132, 252, 0.7) !important;
+            color: #581c87 !important;
+        }
+
+        body.theme-pastel input::placeholder,
+        body.theme-pastel textarea::placeholder {
+            color: #a855f7 !important;
+            opacity: 0.85;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--surface-canvas);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .serif-font {
+            font-family: 'Newsreader', serif;
+        }
+
+        .glass-panel {
+            background-color: var(--surface-card);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        body.theme-dark .glass-pill, body.theme-nord .glass-pill, body.theme-cyber .glass-pill {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .apple-button {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .apple-button:hover {
+            transform: translateY(-2px) scale(1.01);
+        }
+        .apple-button:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-500 selection:text-white bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-[var(--border-subtle)] bg-[var(--surface-card)] backdrop-blur-2xl sticky top-0 z-40 px-6 py-4 flex items-center justify-between shadow-sm">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                <i class="fa-solid fa-graduation-cap text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">QuizPulse</h1>
+                <p class="text-[10px] text-[var(--text-muted)] font-bold tracking-wide uppercase">Arcade & Study Suite</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2.5">
+            <button onclick="goToHome()" class="px-4 py-2 rounded-xl glass-pill hover:bg-white/80 dark:hover:bg-white/15 text-xs font-bold flex items-center space-x-2 transition-all">
+                <i class="fa-solid fa-house text-blue-500"></i>
+                <span class="hidden sm:inline">Home</span>
+            </button>
+            <button onclick="openStandaloneHistoryModal()" class="px-4 py-2 rounded-xl glass-pill hover:bg-white/80 dark:hover:bg-white/15 text-xs font-bold flex items-center space-x-2 transition-all">
+                <i class="fa-solid fa-clock-rotate-left text-purple-500"></i>
+                <span class="hidden sm:inline">History & Stats</span>
+            </button>
+            <button onclick="openSocialModal()" class="px-4 py-2 rounded-xl glass-pill hover:bg-white/80 dark:hover:bg-white/15 text-xs font-bold flex items-center space-x-2 transition-all">
+                <i class="fa-solid fa-user-group text-pink-500"></i>
+                <span class="hidden sm:inline">Friends</span>
+            </button>
+            <button onclick="openThemeModal()" class="px-4 py-2 rounded-xl glass-pill hover:bg-white/80 dark:hover:bg-white/15 text-xs font-bold flex items-center space-x-2 transition-all text-amber-500">
+                <i class="fa-solid fa-palette"></i>
+                <span class="hidden sm:inline">Theme</span>
+            </button>
+            <button onclick="handleProfileNavClick()" id="profile-nav-btn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 apple-button flex items-center space-x-2">
+                <i class="fa-solid fa-circle-user"></i>
+                <span id="profile-nav-name">Sign In</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8 space-y-8">
+
+        <!-- VIEW 1: HOME DASHBOARD (Updated to 2 Main Cards: Quiz Mode & Games Arcade) -->
+        <div id="home-dashboard" class="space-y-8">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 border border-purple-500/20 text-purple-600 text-xs font-extrabold uppercase tracking-wider shadow-sm inline-flex items-center space-x-2">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    <span>Learning Reimagined</span>
+                </span>
+                
+                <!-- Main Brand Spotlight Header -->
+                <div class="space-y-2">
+                    <h1 class="text-5xl md:text-7xl font-black tracking-tight bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+                        QuizPulse
+                    </h1>
+                    <p class="text-sm md:text-base text-[var(--text-muted)] font-semibold tracking-wide uppercase">
+                        Interactive Arcade & Study Suite
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Card 1: Quiz Mode -->
+                <div class="glass-panel p-8 rounded-3xl space-y-6 border border-blue-500/20 shadow-xl hover:shadow-2xl hover:border-blue-500/40 transition-all group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-cyan-500 flex items-center justify-center text-white text-3xl shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-bold">Quiz Mode</h3>
+                    </div>
+                    <div>
+                        <button onclick="openQuizSelectorModal()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-lg shadow-blue-500/25 apple-button flex items-center justify-center space-x-2">
+                            <span>Start Quiz Mode</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 2: Games Arcade -->
+                <div class="glass-panel p-8 rounded-3xl space-y-6 border border-purple-500/20 shadow-xl hover:shadow-2xl hover:border-purple-500/40 transition-all group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 via-pink-500 to-rose-500 flex items-center justify-center text-white text-3xl shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-bold">Games Arcade</h3>
+                    </div>
+                    <div>
+                        <button onclick="openGamesSelectorModal()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 hover:opacity-95 text-white font-bold text-xs shadow-lg shadow-purple-500/25 apple-button flex items-center justify-center space-x-2">
+                            <span>Enter Games Arcade</span>
+                            <i class="fa-solid fa-play text-[#00ff80]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: ACTIVE QUIZ VIEW -->
+        <div id="quiz-view" class="hidden max-w-4xl mx-auto space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Question Navigator Sidebar -->
+                <div class="glass-panel p-6 rounded-3xl space-y-4 border border-blue-500/20 shadow-xl md:col-span-1">
+                    <h4 class="text-xs font-black uppercase text-[var(--text-muted)] tracking-wider">Question Navigator</h4>
+                    <div id="quiz-nav-grid" class="grid grid-cols-5 gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                    <div class="pt-4 border-t border-[var(--border-subtle)] space-y-2 text-[10px] text-[var(--text-muted)] font-semibold">
+                        <div class="flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span><span>Current</span></div>
+                        <div class="flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-emerald-500/20 text-emerald-600 inline-block"></span><span>Answered</span></div>
+                        <div class="flex items-center space-x-2"><span class="w-3 h-3 rounded-full bg-[var(--surface-muted)] inline-block"></span><span>Unanswered</span></div>
+                    </div>
+                </div>
+
+                <!-- Main Quiz Card -->
+                <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-6 border border-blue-500/20 shadow-2xl md:col-span-3">
+                    <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 text-xs font-bold">
+                                Question <span id="current-q-num">1</span> of <span id="total-q-num">2</span>
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-xs font-bold text-[var(--text-muted)]">
+                            <i class="fa-solid fa-clock text-blue-500"></i>
+                            <span id="quiz-timer-text">Infinite Time</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 id="quiz-question-text" class="text-lg md:text-xl font-bold leading-relaxed">Question text goes here...</h3>
+                        <div id="quiz-options-container" class="space-y-3">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
+                        <button onclick="prevQuestion()" id="quiz-prev-btn" class="px-5 py-2.5 rounded-xl bg-[var(--surface-muted)] hover:bg-[var(--border-subtle)] text-xs font-bold apple-button disabled:opacity-40">Previous</button>
+                        <button onclick="markDontKnow()" class="px-5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-xs font-bold apple-button flex items-center space-x-1.5">
+                            <i class="fa-solid fa-question"></i>
+                            <span>Don't Know</span>
+                        </button>
+                        <button onclick="nextQuestion()" id="quiz-next-btn" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md apple-button">Next Question</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: QUIZ RESULTS VIEW -->
+        <div id="quiz-results-view" class="hidden max-w-md mx-auto space-y-6 text-center">
+            <div class="glass-panel p-8 rounded-3xl space-y-6 border border-emerald-500/20 shadow-2xl">
+                <div class="w-20 h-20 rounded-3xl bg-emerald-500/10 text-emerald-500 mx-auto flex items-center justify-center text-4xl shadow-inner">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-2xl font-black">Quiz Completed!</h3>
+                    <p class="text-xs text-[var(--text-muted)]">Here is how you performed on this session.</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] space-y-1">
+                    <span id="final-score-text" class="text-4xl font-black text-emerald-500">100%</span>
+                    <p class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Final Accuracy Score</p>
+                </div>
+                <button onclick="goToHome()" class="w-full py-3.5 rounded-2xl bg-blue-600 text-white font-bold text-xs shadow-lg apple-button">Return to Home</button>
+            </div>
+        </div>
+
+        <!-- VIEW 4: ARCADE GAME VIEW -->
+        <div id="arcade-game-view" class="hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-6 border border-purple-500/20 shadow-2xl text-center">
+                <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+                    <div>
+                        <h3 id="arcade-active-mode-title" class="text-2xl font-black">3D World Arcade</h3>
+                        <p id="arcade-active-instructions" class="text-xs text-[var(--text-muted)]">Use Arrow Keys or On-Screen Controls to move and collect gems!</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="px-4 py-2 rounded-xl bg-purple-500/10 text-purple-600 font-extrabold text-xs">
+                            Score: <span id="arcade-score-val">0</span>
+                        </div>
+                        <button onclick="goToHome()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md apple-button">Exit Game</button>
+                    </div>
+                </div>
+
+                <!-- Game Canvas & HUD Container -->
+                <div id="arcade-game-container" class="w-full h-[450px] rounded-2xl bg-black/80 overflow-hidden relative shadow-inner">
+                    <!-- Dynamic Game HUD / Canvas injected here -->
+                </div>
+
+                <!-- On-Screen Controls for Touch / Mouse -->
+                <div id="arcade-controls-bar" class="flex items-center justify-center space-x-4 pt-2">
+                    <!-- Populated dynamically based on game mode -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: FLASHCARD VIEW -->
+        <div id="flashcard-view" class="hidden max-w-md mx-auto space-y-6">
+            <div class="glass-panel p-8 rounded-3xl space-y-6 border border-indigo-500/20 shadow-2xl text-center">
+                <h3 class="text-2xl font-black">Flashcard Practice</h3>
+                <p class="text-xs text-[var(--text-muted)]">Active Recall Session</p>
+                <button onclick="goToHome()" class="w-full py-3.5 rounded-2xl bg-indigo-600 text-white font-bold text-xs shadow-lg apple-button">Return to Home</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- QUIZ SELECTOR MODAL (Saved, Imports, & Premade Quizzes) -->
+    <div id="quiz-selector-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-xl w-full p-6 md:p-8 shadow-2xl space-y-6 border border-blue-500/20 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+                <div>
+                    <h3 class="text-xl font-extrabold">Quiz Selector Hub</h3>
+                    <p class="text-xs text-[var(--text-muted)]">Choose from your saved imports or explore AI-analyzed quizzes</p>
+                </div>
+                <button onclick="closeQuizSelectorModal()" class="w-9 h-9 rounded-xl bg-[var(--surface-muted)] hover:bg-[var(--border-subtle)] flex items-center justify-center text-xs transition-all">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <!-- Quiz Source Tabs (Reordered: Saved Quizzes 1st, Import 2nd, Premade Quizzes last) -->
+            <div class="flex border-b border-[var(--border-subtle)] text-xs font-bold space-x-6">
+                <button onclick="switchQuizSourceTab('saved')" id="qtab-saved" class="pb-2 border-b-2 border-blue-600 text-blue-600 font-bold transition-all">Saved Quizzes</button>
+                <button onclick="switchQuizSourceTab('import')" id="qtab-import" class="pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all">Import Material</button>
+                <button onclick="switchQuizSourceTab('presets')" id="qtab-presets" class="pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all">Premade Quizzes</button>
+            </div>
+
+            <!-- Tab 1: Saved Quizzes (Only saved imports, starts empty) -->
+            <div id="qcontainer-saved" class="space-y-3">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Tab 2: Import Material (Upload photos, PDFs, text, etc. & AI analyze) -->
+            <div id="qcontainer-import" class="space-y-4 hidden">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Quiz Title</label>
+                    <input type="text" id="import-quiz-title" placeholder="e.g. Chapter 4 Chemistry Notes" class="w-full p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none">
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Upload File (Photos, PDFs, TXT, etc.) or Paste Text</label>
+                    <div class="border-2 border-dashed border-[var(--border-subtle)] rounded-2xl p-6 text-center space-y-2 bg-[var(--surface-muted)] hover:border-blue-500/50 transition-all cursor-pointer relative">
+                        <input type="file" id="import-file-input" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileUpload(event)">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-blue-500"></i>
+                        <p class="text-xs font-bold" id="import-file-label">Click to upload photos, PDFs, or documents</p>
+                        <p class="text-[10px] text-[var(--text-muted)]">AI will automatically parse and convert into your custom quiz</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Or Paste Text Material</label>
+                    <textarea id="import-quiz-data" rows="3" placeholder="Paste notes, article text, or syllabus..." class="w-full p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none"></textarea>
+                </div>
+
+                <!-- Number of Questions Selector Slider & Input -->
+                <div class="space-y-2 p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)]">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold uppercase text-[var(--text-muted)]">Number of Questions (Up to 30)</label>
+                        <input type="number" id="import-question-count-input" min="1" max="30" value="10" oninput="syncImportQuestionCount('input')" class="w-20 p-2 text-center rounded-xl bg-[var(--surface-card)] border border-[var(--border-subtle)] text-xs font-bold outline-none">
+                    </div>
+                    <input type="range" id="import-question-count-slider" min="1" max="30" value="10" oninput="syncImportQuestionCount('slider')" class="w-full accent-blue-600 cursor-pointer">
+                </div>
+
+                <button onclick="analyzeAndSaveImportedQuiz()" id="ai-analyze-btn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs shadow-md apple-button flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                    <span>AI Analyze & Generate Quiz</span>
+                </button>
+            </div>
+
+            <!-- Tab 3: Premade Quizzes (10 Quizzes, 10 questions each) -->
+            <div id="qcontainer-presets" class="space-y-4 hidden">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-[var(--text-muted)] text-xs"></i>
+                    <input type="text" id="quiz-search-input" oninput="filterQuizPresets()" placeholder="Search premade quizzes..." class="w-full pl-10 pr-4 py-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none">
+                </div>
+                <div id="qcontainer-presets-list" class="space-y-2.5 max-h-52 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRE-QUIZ TIMER & SETTINGS MODAL -->
+    <div id="pre-quiz-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl space-y-6 border border-blue-500/20">
+            <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+                <div>
+                    <h3 class="text-xl font-extrabold">Quiz Timer & Settings</h3>
+                    <p class="text-xs text-[var(--text-muted)]">Configure duration before starting your test</p>
+                </div>
+                <button onclick="closePreQuizModal()" class="w-9 h-9 rounded-xl bg-[var(--surface-muted)] hover:bg-[var(--border-subtle)] flex items-center justify-center text-xs transition-all">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-bold uppercase text-[var(--text-muted)]">Time Limit (Minutes)</label>
+                    <input type="number" id="quiz-timer-input" min="0" max="60" value="0" oninput="syncTimerInput('input')" class="w-20 p-2 text-center rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs font-bold outline-none">
+                </div>
+                <input type="range" id="quiz-timer-slider" min="0" max="60" value="0" oninput="syncTimerInput('slider')" class="w-full accent-blue-600 cursor-pointer">
+                <p class="text-[10px] text-[var(--text-muted)] text-center">Set to 0 for Infinite Time.</p>
+            </div>
+
+            <button onclick="confirmAndStartQuiz()" class="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-500/25 apple-button flex items-center justify-center space-x-2">
+                <span>Start Quiz Now</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- GAMES ARCADE SELECTOR MODAL -->
+    <div id="games-selector-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-xl w-full p-6 md:p-8 shadow-2xl space-y-6 border border-purple-500/20 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+                <div>
+                    <h3 id="games-modal-title" class="text-xl font-extrabold">Games Arcade Hub</h3>
+                    <p id="games-modal-subtitle" class="text-xs text-[var(--text-muted)]">Choose from your saved imports or explore AI-analyzed quizzes</p>
+                </div>
+                <button onclick="closeGamesSelectorModal()" class="w-9 h-9 rounded-xl bg-[var(--surface-muted)] hover:bg-[var(--border-subtle)] flex items-center justify-center text-xs transition-all">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <!-- STEP 1: MATERIAL SELECTION (Identical Tab Order & Layout to Quiz Mode: Saved Quizzes 1st, Import 2nd, Premade Quizzes 3rd) -->
+            <div id="games-step-1" class="space-y-6">
+                <!-- Arcade Source Tabs -->
+                <div class="flex border-b border-[var(--border-subtle)] text-xs font-bold space-x-6">
+                    <button onclick="switchGameSourceTab('saved')" id="gtab-saved" class="pb-2 border-b-2 border-purple-600 text-purple-600 font-bold transition-all">Saved Quizzes</button>
+                    <button onclick="switchGameSourceTab('import')" id="gtab-import" class="pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all">Import Material</button>
+                    <button onclick="switchGameSourceTab('presets')" id="gtab-presets" class="pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all">Premade Quizzes</button>
+                </div>
+
+                <!-- Tab 1: Saved Quizzes -->
+                <div id="gcontainer-saved" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Tab 2: Import Material -->
+            <div id="gcontainer-import" class="space-y-4 hidden">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Quiz Title</label>
+                    <input type="text" id="import-game-title" placeholder="e.g. Chapter 4 Chemistry Notes" class="w-full p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none">
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Upload File (Photos, PDFs, TXT, etc.) or Paste Text</label>
+                    <div class="border-2 border-dashed border-[var(--border-subtle)] rounded-2xl p-6 text-center space-y-2 bg-[var(--surface-muted)] hover:border-purple-500/50 transition-all cursor-pointer relative">
+                        <input type="file" id="import-game-file-input" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleGameFileUpload(event)">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-purple-500"></i>
+                        <p class="text-xs font-bold" id="import-game-file-label">Click to upload photos, PDFs, or documents</p>
+                        <p class="text-[10px] text-[var(--text-muted)]">AI will automatically parse and convert into arcade material</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Or Paste Text Material</label>
+                    <textarea id="import-game-data" rows="3" placeholder="Paste notes, article text, or syllabus..." class="w-full p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none"></textarea>
+                </div>
+
+                <!-- Number of Questions Selector Slider & Input for Games -->
+                <div class="space-y-2 p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)]">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold uppercase text-[var(--text-muted)]">Number of Questions (Up to 30)</label>
+                        <input type="number" id="import-game-question-count-input" min="1" max="30" value="10" oninput="syncGameImportQuestionCount('input')" class="w-20 p-2 text-center rounded-xl bg-[var(--surface-card)] border border-[var(--border-subtle)] text-xs font-bold outline-none">
+                    </div>
+                    <input type="range" id="import-game-question-count-slider" min="1" max="30" value="10" oninput="syncGameImportQuestionCount('slider')" class="w-full accent-purple-600 cursor-pointer">
+                </div>
+
+                <button onclick="analyzeAndSaveImportedGame()" id="ai-analyze-game-btn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-xs shadow-md apple-button flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                    <span>AI Analyze & Select Material</span>
+                </button>
+            </div>
+
+            <!-- Tab 3: Premade Quizzes -->
+                <div id="gcontainer-presets" class="space-y-4 hidden">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-[var(--text-muted)] text-xs"></i>
+                        <input type="text" id="game-search-input" oninput="filterGamePresets()" placeholder="Search premade quizzes..." class="w-full pl-10 pr-4 py-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none">
+                    </div>
+                    <div id="gcontainer-presets-list" class="space-y-2.5 max-h-52 overflow-y-auto pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: SECONDARY GAME OPTIONS SCREEN (Shown after selecting material) -->
+            <div id="games-step-2" class="space-y-6 hidden">
+                <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase text-purple-600">Selected Material</span>
+                        <h4 id="selected-game-material-title" class="text-sm font-extrabold text-[var(--text-main)]">General Science</h4>
+                    </div>
+                    <button onclick="backToGameMaterialSelect()" class="text-xs font-bold text-purple-600 hover:underline flex items-center space-x-1">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Change
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-xs font-bold uppercase text-[var(--text-muted)]">Choose Game Mode</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="selectArcadeGameType('3dworld')" id="gopt-3dworld" class="p-4 rounded-2xl bg-purple-600 text-white font-bold text-xs border border-purple-500 shadow-md text-left flex flex-col justify-between h-24 apple-button">
+                            <i class="fa-solid fa-cube text-lg"></i>
+                            <div>
+                                <div class="font-extrabold">3D World</div>
+                                <div class="text-[10px] opacity-80">Explore & Collect</div>
+                            </div>
+                        </button>
+                        <button onclick="selectArcadeGameType('tower')" id="gopt-tower" class="p-4 rounded-2xl bg-[var(--surface-muted)] text-[var(--text-main)] font-bold text-xs border border-[var(--border-subtle)] hover:border-purple-500/50 text-left flex flex-col justify-between h-24 apple-button">
+                            <i class="fa-solid fa-chess-rook text-lg"></i>
+                            <div>
+                                <div class="font-extrabold">Tower Defense</div>
+                                <div class="text-[10px] text-[var(--text-muted)]">Answer to Defend</div>
+                            </div>
+                        </button>
+                        <button onclick="selectArcadeGameType('speed')" id="gopt-speed" class="p-4 rounded-2xl bg-[var(--surface-muted)] text-[var(--text-main)] font-bold text-xs border border-[var(--border-subtle)] hover:border-purple-500/50 text-left flex flex-col justify-between h-24 apple-button">
+                            <i class="fa-solid fa-bolt text-lg"></i>
+                            <div>
+                                <div class="font-extrabold">Speed Quiz</div>
+                                <div class="text-[10px] text-[var(--text-muted)]">Rapid Fire Q&A</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-[var(--border-subtle)]">
+                    <button onclick="launchFinalArcadeGameSession()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white font-bold text-xs shadow-lg shadow-purple-500/25 apple-button flex items-center justify-center space-x-2">
+                        <span>Launch Game Session</span>
+                        <i class="fa-solid fa-play text-[#00ff80]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STANDALONE HISTORY & STATS MODAL -->
+    <div id="history-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-xl w-full p-6 md:p-8 shadow-2xl space-y-6 border border-purple-500/20 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+                <div>
+                    <h3 class="text-xl font-extrabold">History & Statistics</h3>
+                    <p class="text-xs text-[var(--text-muted)]">Review your past quiz attempts and game records</p>
+                </div>
+                <button onclick="closeStandaloneHistoryModal()" class="w-9 h-9 rounded-xl bg-[var(--surface-muted)] hover:bg-[var(--border-subtle)] flex items-center justify-center text-xs transition-all">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <!-- History Navigation Tabs -->
+            <div class="flex border-b border-[var(--border-subtle)] text-xs font-bold space-x-6">
+                <button onclick="switchHistoryTab('quizzes')" id="htab-quizzes" class="pb-2 border-b-2 border-purple-600 text-purple-600 font-bold transition-all">Quiz History</button>
+                <button onclick="switchHistoryTab('games')" id="htab-games" class="pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all">Game History</button>
+            </div>
+
+            <!-- Stats Overview Banner -->
+            <div class="grid grid-cols-3 gap-3">
+                <div class="p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-center space-y-1">
+                    <span id="hist-total-quizzes" class="text-2xl font-black text-blue-600">0</span>
+                    <p class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Quizzes Taken</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-center space-y-1">
+                    <span id="hist-total-games" class="text-2xl font-black text-purple-500">0</span>
+                    <p class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Games Played</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-center space-y-1">
+                    <span id="hist-avg-score" class="text-2xl font-black text-emerald-500">0%</span>
+                    <p class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Avg Quiz Score</p>
+                </div>
+            </div>
+
+            <!-- Tab 1: Quiz History -->
+            <div id="hcontainer-quizzes" class="space-y-3">
+                <h4 class="text-xs font-bold uppercase text-[var(--text-muted)]">Recent Quiz Runs</h4>
+                <div id="standalone-history-list" class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Tab 2: Game History -->
+            <div id="hcontainer-games" class="space-y-3 hidden">
+                <h4 class="text-xs font-bold uppercase text-[var(--text-muted)]">Recent Arcade Game Sessions</h4>
+                <div id="game-history-list" class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER PROFILE & SOCIAL DASHBOARD MODAL -->
+    <div id="profile-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl space-y-6 border border-[var(--border-subtle)] max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+                <div class="flex items-center space-x-3">
+                    <div id="profile-header-avatar" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-md">
+                        U
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 id="profile-header-name" class="text-xl font-extrabold">Username</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="closeProfileModal()" class="w-9 h-9 rounded-xl bg-[var(--surface-muted)] hover:bg-[var(--border-subtle)] flex items-center justify-center text-xs transition-all"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+            </div>
+
+            <!-- Profile Navigation Tabs -->
+            <div class="flex border-b border-[var(--border-subtle)] text-xs font-bold space-x-6">
+                <button onclick="switchProfileTab('stats')" id="tab-btn-stats" class="pb-2 border-b-2 border-blue-600 text-blue-600 transition-all">Overview & Stats</button>
+                <button onclick="switchProfileTab('friends')" id="tab-btn-friends" class="pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] border-b-2 border-transparent transition-all">Friends & Following</button>
+            </div>
+
+            <!-- Tab Content 1: Overview & Stats -->
+            <div id="profile-tab-stats" class="space-y-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-center space-y-1">
+                        <span class="text-2xl font-black text-blue-600" id="stat-quizzes-taken">0</span>
+                        <p class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Quizzes Completed</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-center space-y-1">
+                        <span class="text-2xl font-black text-emerald-500" id="stat-avg-score">0%</span>
+                        <p class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Average Score</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-center space-y-1">
+                        <span class="text-2xl font-black text-purple-500" id="stat-following-count">0</span>
+                        <p class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Following</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-center space-y-1">
+                        <span class="text-2xl font-black text-amber-500" id="stat-arcade-pts">0</span>
+                        <p class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Arcade Pts</p>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] space-y-3">
+                    <h4 class="text-xs font-bold uppercase text-[var(--text-muted)]">Subject Mastery Breakdown</h4>
+                    <div id="subject-mastery-container" class="space-y-3">
+                        <!-- Populated dynamically based on actual quiz and game runs -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Friends & Following -->
+            <div id="profile-tab-friends" class="space-y-4 hidden">
+                <div class="flex space-x-2">
+                    <input type="text" id="profile-friend-search" placeholder="Search friends by username..." class="flex-1 p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none">
+                    <button onclick="addFriendFromProfile()" class="px-5 py-3 rounded-xl bg-[var(--accent)] text-white font-bold text-xs apple-button">Follow</button>
+                </div>
+                <div id="friends-profile-list" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                    <!-- Friends Cards Rendered Dynamically -->
+                </div>
+            </div>
+
+            <!-- Friend Profile Inspector View (When clicking on a friend) -->
+            <div id="friend-detail-view" class="p-4 rounded-2xl bg-blue-500/5 border border-blue-500/20 space-y-4 hidden">
+                <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+                    <div class="flex items-center space-x-3">
+                        <div id="friend-detail-avatar" class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
+                            F
+                        </div>
+                        <div>
+                            <h4 id="friend-detail-username" class="text-sm font-bold">Friend Username</h4>
+                            <p id="friend-detail-stats-sub" class="text-[10px] text-[var(--text-muted)]">Following 3 users • 12 Quizzes Completed</p>
+                        </div>
+                    </div>
+                    <button onclick="closeFriendDetail()" class="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)]"><i class="fa-solid fa-xmark mr-1"></i> Close</button>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="p-2.5 rounded-xl bg-[var(--surface-card)] border border-[var(--border-subtle)]">
+                        <span id="friend-stat-quizzes" class="text-sm font-bold text-blue-500">12</span>
+                        <p class="text-[9px] text-[var(--text-muted)]">Tests Taken</p>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-[var(--surface-card)] border border-[var(--border-subtle)]">
+                        <span id="friend-stat-avg" class="text-sm font-bold text-emerald-500">88%</span>
+                        <p class="text-[9px] text-[var(--text-muted)]">Avg Score</p>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-[var(--surface-card)] border border-[var(--border-subtle)]">
+                        <span id="friend-stat-following" class="text-sm font-bold text-amber-500">5</span>
+                        <p class="text-[9px] text-[var(--text-muted)]">Following</p>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Their Friends / Following:</h5>
+                    <div id="friend-following-tags" class="flex flex-wrap gap-1.5">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme & Personalization Modal -->
+    <div id="theme-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-[var(--border-subtle)]">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold serif-font">Theme & Personalization</h3>
+                <button onclick="closeThemeModal()" class="w-8 h-8 rounded-xl bg-[var(--surface-muted)] flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="grid grid-cols-2 gap-3" id="theme-buttons-container">
+                <button onclick="setTheme('light')" id="theme-btn-light" style="background-color: #f6f5f2 !important; color: #1c1917 !important; border: 1px solid #d6d3d1 !important;" class="p-3 rounded-2xl font-bold text-xs apple-button flex items-center justify-between transition-all">
+                    <span>Classic Light</span>
+                    <i class="fa-solid fa-check theme-check-icon hidden" id="check-light"></i>
+                </button>
+                <button onclick="setTheme('dark')" id="theme-btn-dark" style="background-color: #0f1115 !important; color: #ffffff !important; border: 1px solid #27272a !important;" class="p-3 rounded-2xl font-bold text-xs apple-button flex items-center justify-between transition-all">
+                    <span>Minimal Obsidian</span>
+                    <i class="fa-solid fa-check theme-check-icon hidden" id="check-dark"></i>
+                </button>
+                <button onclick="setTheme('cyber')" id="theme-btn-cyber" style="background-color: #05050a !important; color: #00ff80 !important; border: 2px solid #ff007f !important; text-shadow: 0 0 8px rgba(0,255,128,0.5);" class="p-3 rounded-2xl font-bold text-xs apple-button flex items-center justify-between transition-all">
+                    <span>Cyberpunk Neon</span>
+                    <i class="fa-solid fa-check theme-check-icon hidden" id="check-cyber"></i>
+                </button>
+                <button onclick="setTheme('pastel')" id="theme-btn-pastel" style="background-color: #fdf4f5 !important; color: #7a4959 !important; border: 1px solid #fbcfe8 !important;" class="p-3 rounded-2xl font-bold text-xs apple-button flex items-center justify-between transition-all">
+                    <span>Pastel Dream</span>
+                    <i class="fa-solid fa-check theme-check-icon hidden" id="check-pastel"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Native Username / Password Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 border border-[var(--border-subtle)]">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold serif-font" id="auth-modal-title">Sign In</h3>
+                <button onclick="closeAuthModal()" class="w-8 h-8 rounded-xl bg-[var(--surface-muted)] flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Username</label>
+                    <input type="text" id="auth-username" placeholder="Enter your username..." class="w-full mt-1 p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase text-[var(--text-muted)]">Password</label>
+                    <input type="password" id="auth-password" placeholder="Enter password..." class="w-full mt-1 p-3 rounded-xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] text-xs outline-none">
+                </div>
+                <div id="auth-error-msg" class="text-xs text-rose-500 font-semibold hidden"></div>
+                <button onclick="submitNativeAuth()" class="w-full py-3 rounded-xl bg-[var(--accent)] text-white text-xs font-bold shadow-md apple-button">
+                    Sign In / Register
+                </button>
+                <p class="text-[10px] text-[var(--text-muted)] text-center">New users will be automatically registered.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Out Confirmation Modal -->
+    <div id="signout-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 border border-[var(--border-subtle)] text-center">
+            <div class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-500 mx-auto flex items-center justify-center text-2xl">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
+            <h3 class="text-lg font-bold">Sign Out of Account?</h3>
+            <p class="text-xs text-[var(--text-muted)]">Your game data and quiz history are safely saved to your account and will remain when you log back in.</p>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="closeSignOutModal()" class="flex-1 py-3 rounded-xl bg-[var(--surface-muted)] text-xs font-bold apple-button">Cancel</button>
+                <button onclick="confirmSignOut()" class="flex-1 py-3 rounded-xl bg-rose-600 text-white text-xs font-bold shadow-md apple-button">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Arcade Trivia Question Modal -->
+    <div id="game-question-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-[var(--border-subtle)]">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold uppercase">Arcade Trivia Challenge</span>
+            <h4 id="game-q-text" class="text-base font-bold">Question text here</h4>
+            <div id="game-q-options" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Global Application State Variables
+        let currentUser = JSON.parse(localStorage.getItem('quizpulse_user')) || null;
+        
+        // Declare account-scoped data arrays globally to prevent ReferenceErrors
+        let quizHistory = [];
+        let gameHistory = [];
+        let userFriends = [];
+        let savedQuizzes = [];
+
+        // Account-scoped data helper functions
+        function getUserStorageKey(baseKey) {
+            const username = currentUser ? currentUser.name.toLowerCase() : 'guest';
+            return `quizpulse_${username}_${baseKey}`;
+        }
+
+        function loadUserAppData() {
+            quizHistory = JSON.parse(localStorage.getItem(getUserStorageKey('quiz_history'))) || [];
+            gameHistory = JSON.parse(localStorage.getItem(getUserStorageKey('game_history'))) || [];
+            userFriends = JSON.parse(localStorage.getItem(getUserStorageKey('friends'))) || [];
+            savedQuizzes = JSON.parse(localStorage.getItem(getUserStorageKey('saved_quizzes'))) || [];
+        }
+
+        // Initialize user state on load
+        if (currentUser) {
+            loadUserAppData();
+        } else {
+            loadUserAppData(); // Load guest scope by default
+        }
+
+        let deckHighScores = {};
+        let activeDeckTitle = 'General Science & Atmosphere';
+        let gameScore = 0;
+        let pendingQuizType = 'sample';
+        let selectedTimeLimit = 0;
+        let timeRemainingSeconds = 0;
+        let quizTimerInterval = null;
+        let currentQuizQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let struckAnswers = {}; // Tracks struck out options per question { qId: { optId: true } }
+        let dontKnowQuestions = {}; // Tracks questions marked as "Don't Know"
+        let selectedArcadeGameMode = '3dworld';
+        let selectedGamePreset = 'General Science & Atmosphere';
+        let uploadedFileContent = null;
+
+        // Game Runtime Variables
+        let arcadeAnimFrame = null;
+        let arcadeGameActive = false;
+        let arcadeScore = 0;
+        let currentTriviaCallback = null;
+
+        function syncImportQuestionCount(source) {
+            const slider = document.getElementById('import-question-count-slider');
+            const input = document.getElementById('import-question-count-input');
+            if (source === 'slider') {
+                input.value = slider.value;
+            } else {
+                let val = parseInt(input.value) || 10;
+                if (val < 1) val = 1;
+                if (val > 30) val = 30;
+                input.value = val;
+                slider.value = val;
+            }
+        }
+
+        function syncGameImportQuestionCount(source) {
+            const slider = document.getElementById('import-game-question-count-slider');
+            const input = document.getElementById('import-game-question-count-input');
+            if (source === 'slider') {
+                input.value = slider.value;
+            } else {
+                let val = parseInt(input.value) || 10;
+                if (val < 1) val = 1;
+                if (val > 30) val = 30;
+                input.value = val;
+                slider.value = val;
+            }
+        }
+
+        // Premade quizzes ...
+        const premadeQuizzes = [
+            { id: 'pq1', title: 'General Science & Atmosphere', category: 'Science', questions: [
+                { id: 1, question: "Which gas makes up approximately 78% of Earth's atmosphere?", answer: "B", options: [{id:"A", text:"Oxygen"}, {id:"B", text:"Nitrogen"}, {id:"C", text:"Carbon Dioxide"}, {id:"D", text:"Argon"}] },
+                { id: 2, question: "What is the primary process by which plants convert sunlight into energy?", answer: "A", options: [{id:"A", text:"Photosynthesis"}, {id:"B", text:"Respiration"}, {id:"C", text:"Fermentation"}, {id:"D", text:"Transpiration"}] },
+                { id: 3, question: "What is the chemical symbol for gold?", answer: "C", options: [{id:"A", text:"Ag"}, {id:"B", text:"Fe"}, {id:"C", text:"Au"}, {id:"D", text:"Cu"}] },
+                { id: 4, question: "Which organ in the human body is primarily responsible for filtering blood?", answer: "D", options: [{id:"A", text:"Heart"}, {id:"B", text:"Lungs"}, {id:"C", text:"Liver"}, {id:"D", text:"Kidneys"}] },
+                { id: 5, question: "At what temperature does water freeze in Celsius?", answer: "A", options: [{id:"A", text:"0°C"}, {id:"B", text:"32°C"}, {id:"C", text:"100°C"}, {id:"D", text:"-10°C"}] },
+                { id: 6, question: "What is the powerhouse of the cell?", answer: "B", options: [{id:"A", text:"Nucleus"}, {id:"B", text:"Mitochondria"}, {id:"C", text:"Ribosome"}, {id:"D", text:"Golgi body"}] },
+                { id: 7, question: "Which planet is closest to the Sun?", answer: "C", options: [{id:"A", text:"Venus"}, {id:"B", text:"Earth"}, {id:"C", text:"Mercury"}, {id:"D", text:"Mars"}] },
+                { id: 8, question: "What is the speed of light in a vacuum approximately?", answer: "A", options: [{id:"A", text:"300,000 km/s"}, {id:"B", text:"150,000 km/s"}, {id:"C", text:"1,000 km/s"}, {id:"D", text:"3,000,000 km/s"}] },
+                { id: 9, question: "What is the hardest natural substance on Earth?", answer: "D", options: [{id:"A", text:"Gold"}, {id:"B", text:"Iron"}, {id:"C", text:"Platinum"}, {id:"D", text:"Diamond"}] },
+                { id: 10, question: "How many bones are in the adult human body?", answer: "B", options: [{id:"A", text:"150"}, {id:"B", text:"206"}, {id:"C", text:"300"}, {id:"D", text:"220"}] }
+            ]},
+            { id: 'pq2', title: 'World Geography & Capitals', category: 'Geography', questions: [
+                { id: 1, question: "What is the capital of Australia?", answer: "C", options: [{id:"A", text:"Sydney"}, {id:"B", text:"Melbourne"}, {id:"C", text:"Canberra"}, {id:"D", text:"Brisbane"}] },
+                { id: 2, question: "Which river is the longest in the world?", answer: "A", options: [{id:"A", text:"Nile"}, {id:"B", text:"Amazon"}, {id:"C", text:"Yangtze"}, {id:"D", text:"Mississippi"}] },
+                { id: 3, question: "In which country is Mount Kilimanjaro located?", answer: "B", options: [{id:"A", text:"Kenya"}, {id:"B", text:"Tanzania"}, {id:"C", text:"Uganda"}, {id:"D", text:"South Africa"}] },
+                { id: 4, question: "What is the smallest country in the world by land area?", answer: "D", options: [{id:"A", text:"Monaco"}, {id:"B", text:"Liechtenstein"}, {id:"C", text:"San Marino"}, {id:"D", text:"Vatican City"}] },
+                { id: 5, question: "Which ocean is the largest by surface area?", answer: "C", options: [{id:"A", text:"Atlantic Ocean"}, {id:"B", text:"Indian Ocean"}, {id:"C", text:"Pacific Ocean"}, {id:"D", text:"Arctic Ocean"}] },
+                { id: 6, question: "What is the capital of Canada?", answer: "A", options: [{id:"A", text:"Ottawa"}, {id:"B", text:"Toronto"}, {id:"C", text:"Vancouver"}, {id:"D", text:"Montreal"}] },
+                { id: 7, question: "Which desert is the largest hot desert in the world?", answer: "B", options: [{id:"A", text:"Gobi Desert"}, {id:"B", text:"Sahara Desert"}, {id:"C", text:"Kalahari Desert"}, {id:"D", text:"Mojave Desert"}] },
+                { id: 8, question: "How many continents are there on Earth?", answer: "C", options: [{id:"A", text:"5"}, {id:"B", text:"6"}, {id:"C", text:"7"}, {id:"D", text:"8"}] },
+                { id: 9, question: "What US state has the longest coastline?", answer: "A", options: [{id:"A", text:"Alaska"}, {id:"B", text:"California"}, {id:"C", text:"Florida"}, {id:"D", text:"Texas"}] },
+                { id: 10, question: "Which European city is built on more than 100 small islands?", answer: "D", options: [{id:"A", text:"London"}, {id:"B", text:"Amsterdam"}, {id:"C", text:"Stockholm"}, {id:"D", text:"Venice"}] }
+            ]},
+            { id: 'pq3', title: 'World History Milestones', category: 'History', questions: [
+                { id: 1, question: "In what year did the Titanic sink in the Atlantic Ocean?", answer: "B", options: [{id:"A", text:"1908"}, {id:"B", text:"1912"}, {id:"C", text:"1915"}, {id:"D", text:"1920"}] },
+                { id: 2, question: "Who was the first Emperor of Rome?", answer: "A", options: [{id:"A", text:"Augustus"}, {id:"B", text:"Julius Caesar"}, {id:"C", text:"Nero"}, {id:"D", text:"Constantine"}] },
+                { id: 3, question: "The Renaissance period originated in which country?", answer: "C", options: [{id:"A", text:"France"}, {id:"B", text:"Greece"}, {id:"C", text:"Italy"}, {id:"D", text:"Spain"}] },
+                { id: 4, question: "In what year did World War II end?", answer: "D", options: [{id:"A", text:"1942"}, {id:"B", text:"1943"}, {id:"C", text:"1944"}, {id:"D", text:"1945"}] },
+                { id: 5, question: "Who painted the Mona Lisa?", answer: "B", options: [{id:"A", text:"Vincent van Gogh"}, {id:"B", text:"Leonardo da Vinci"}, {id:"C", text:"Pablo Picasso"}, {id:"D", text:"Claude Monet"}] },
+                { id: 6, question: "Which ancient civilization built the Machu Picchu complex in Peru?", answer: "A", options: [{id:"A", text:"Inca Empire"}, {id:"B", text:"Maya Empire"}, {id:"C", text:"Aztec Empire"}, {id:"D", text:"Olmec Civilization"}] },
+                { id: 7, question: "The Berlin Wall fell in which year?", answer: "C", options: [{id:"A", text:"1985"}, {id:"B", text:"1987"}, {id:"C", text:"1989"}, {id:"D", text:"1991"}] },
+                { id: 8, question: "Who wrote the play 'Romeo and Juliet'?", answer: "B", options: [{id:"A", text:"Charles Dickens"}, {id:"B", text:"William Shakespeare"}, {id:"C", text:"Mark Twain"}, {id:"D", text:"Jane Austen"}] },
+                { id: 9, question: "Which empire built the Colosseum in Rome?", answer: "D", options: [{id:"A", text:"Greek Empire"}, {id:"B", text:"Persian Empire"}, {id:"C", text:"Ottoman Empire"}, {id:"D", text:"Roman Empire"}] },
+                { id: 10, question: "Who was the first person to walk on the Moon in 1969?", answer: "A", options: [{id:"A", text:"Neil Armstrong"}, {id:"B", text:"Buzz Aldrin"}, {id:"C", text:"Yuri Gagarin"}, {id:"D", text:"Michael Collins"}] }
+            ]},
+            { id: 'pq4', title: 'Computer Science & Technology', category: 'Technology', questions: [
+                { id: 1, question: "What does HTML stand for?", answer: "A", options: [{id:"A", text:"Hyper Text Markup Language"}, {id:"B", text:"High Tech Modern Language"}, {id:"C", text:"Hyper Transfer Machine Language"}, {id:"D", text:"Hyperlink Text Management Language"}] },
+                { id: 2, question: "Who is widely considered the father of modern computers?", answer: "C", options: [{id:"A", text:"Bill Gates"}, {id:"B", text:"Steve Jobs"}, {id:"C", text:"Alan Turing"}, {id:"D", text:"Thomas Edison"}] },
+                { id: 3, question: "What does CPU stand for?", answer: "B", options: [{id:"A", text:"Computer Processing Unit"}, {id:"B", text:"Central Processing Unit"}, {id:"C", text:"Control Program Utility"}, {id:"D", text:"Central Peripheral Unit"}] },
+                { id: 4, question: "Which programming language is known as the language of the web for client-side scripting?", answer: "D", options: [{id:"A", text:"Python"}, {id:"B", text:"C++"}, {id:"C", text:"Java"}, {id:"D", text:"JavaScript"}] },
+                { id: 5, question: "What is the main function of an operating system?", answer: "A", options: [{id:"A", text:"Manage hardware and software resources"}, {id:"B", text:"Compile source code into binaries"}, {id:"C", text:"Protect against viruses only"}, {id:"D", text:"Render web graphics"}] },
+                { id: 6, question: "In databases, what does SQL stand for?", answer: "B", options: [{id:"A", text:"Simple Query Language"}, {id:"B", text:"Structured Query Language"}, {id:"C", text:"Sequential Query Language"}, {id:"D", text:"Standard Query Logic"}] },
+                { id: 7, question: "What year was the World Wide Web invented by Tim Berners-Lee?", answer: "C", options: [{id:"A", text:"1983"}, {id:"B", text:"1985"}, {id:"C", text:"1989"}, {id:"D", text:"1995"}] },
+                { id: 8, question: "Which company created the Android operating system?", answer: "D", options: [{id:"A", text:"Apple"}, {id:"B", text:"Microsoft"}, {id:"C", text:"IBM"}, {id:"D", text:"Google"}] },
+                { id: 9, question: "What does RAM stand for?", answer: "A", options: [{id:"A", text:"Random Access Memory"}, {id:"B", text:"Readily Available Memory"}, {id:"C", text:"Run Access Module"}, {id:"D", text:"Remote Access Machine"}] },
+                { id: 10, question: "What is 'Open Source' software?", answer: "B", options: [{id:"A", text:"Software that is completely free of bugs"}, {id:"B", text:"Software with source code open for anyone to inspect and modify"}, {id:"C", text:"Software that requires a paid subscription"}, {id:"D", text:"Software exclusive to Linux"}] }
+            ]},
+            { id: 'pq5', title: 'Mathematics & Logic', category: 'Math', questions: [
+                { id: 1, question: "What is the value of Pi (π) rounded to two decimal places?", answer: "B", options: [{id:"A", text:"3.12"}, {id:"B", text:"3.14"}, {id:"C", text:"3.16"}, {id:"D", text:"3.18"}] },
+                { id: 2, question: "What is the square root of 144?", answer: "C", options: [{id:"A", text:"10"}, {id:"B", text:"11"}, {id:"C", text:"12"}, {id:"D", text:"14"}] },
+                { id: 3, question: "How many degrees are in a triangle's interior angles?", answer: "A", options: [{id:"A", text:"180°"}, {id:"B", text:"360°"}, {id:"C", text:"90°"}, {id:"D", text:"270°"}] },
+                { id: 4, question: "What is 7 multiplied by 8?", answer: "D", options: [{id:"A", text:"54"}, {id:"B", text:"58"}, {id:"C", text:"62"}, {id:"D", text:"56"}] },
+                { id: 5, question: "What is a polygon with 8 sides called?", answer: "B", options: [{id:"A", text:"Hexagon"}, {id:"B", text:"Octagon"}, {id:"C", text:"Pentagon"}, {id:"D", text:"Heptagon"}] },
+                { id: 6, question: "What is 15% of 200?", answer: "C", options: [{id:"A", text:"20"}, {id:"B", text:"25"}, {id:"C", text:"30"}, {id:"D", text:"35"}] },
+                { id: 7, question: "Solve for x: 2x + 6 = 14", answer: "A", options: [{id:"A", text:"4"}, {id:"B", text:"5"}, {id:"C", text:"6"}, {id:"D", text:"7"}] },
+                { id: 8, question: "What is the next prime number after 7?", answer: "D", options: [{id:"A", text:"9"}, {id:"B", text:"10"}, {id:"C", text:"12"}, {id:"D", text:"11"}] },
+                { id: 9, question: "What is the sum of angles in a four-sided polygon (quadrilateral)?", answer: "B", options: [{id:"A", text:"180°"}, {id:"B", text:"360°"}, {id:"C", text:"540°"}, {id:"D", text:"720°"}] },
+                { id: 10, question: "What is 2 to the power of 5 (2^5)?", answer: "C", options: [{id:"A", text:"16"}, {id:"B", text:"24"}, {id:"C", text:"32"}, {id:"D", text:"64"}] }
+            ]}
+        ];
+
+        // Navigation Handlers
+        function goToHome() {
+            if (quizTimerInterval) clearInterval(quizTimerInterval);
+            document.getElementById('home-dashboard').classList.remove('hidden');
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('quiz-results-view').classList.add('hidden');
+            document.getElementById('arcade-game-view').classList.add('hidden');
+            document.getElementById('flashcard-view').classList.add('hidden');
+        }
+
+        // Standalone History & Stats Modal Handlers
+        function openStandaloneHistoryModal() {
+            renderHistoryLists();
+            document.getElementById('history-modal').classList.remove('hidden');
+        }
+
+        function closeStandaloneHistoryModal() {
+            document.getElementById('history-modal').classList.add('hidden');
+        }
+
+        function switchHistoryTab(tabName) {
+            const tabs = ['quizzes', 'games'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`htab-${t}`);
+                const container = document.getElementById(`hcontainer-${t}`);
+                if (t === tabName) {
+                    btn.className = "pb-2 border-b-2 border-purple-600 text-purple-600 font-bold transition-all";
+                    container.classList.remove('hidden');
+                } else {
+                    btn.className = "pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all";
+                    container.classList.add('hidden');
+                }
+            });
+        }
+
+        function renderHistoryLists() {
+            // Update Stats Banners
+            document.getElementById('hist-total-quizzes').innerText = quizHistory.length;
+            document.getElementById('hist-total-games').innerText = gameHistory.length;
+
+            const avgScore = quizHistory.length > 0
+                ? Math.round(quizHistory.reduce((acc, curr) => acc + (curr.score || 0), 0) / quizHistory.length)
+                : 0;
+            document.getElementById('hist-avg-score').innerText = avgScore + '%';
+
+            // Render Quiz History List
+            const quizListEl = document.getElementById('standalone-history-list');
+            if (quizListEl) {
+                if (quizHistory.length === 0) {
+                    quizListEl.innerHTML = `<div class="p-4 text-center text-xs text-[var(--text-muted)] font-bold">No quiz attempts recorded yet.</div>`;
+                } else {
+                    quizListEl.innerHTML = quizHistory.map(q => `
+                        <div class="p-3 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                            <div>
+                                <h5 class="font-bold">${q.title || 'Quiz Session'}</h5>
+                                <p class="text-[10px] text-[var(--text-muted)]">${q.date || 'Recent'}</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-xl bg-blue-500/10 text-blue-600 font-extrabold">${q.score}%</span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Render Game History List
+            const gameListEl = document.getElementById('game-history-list');
+            if (gameListEl) {
+                if (gameHistory.length === 0) {
+                    gameListEl.innerHTML = `<div class="p-4 text-center text-xs text-[var(--text-muted)] font-bold">No arcade game sessions played yet.</div>`;
+                } else {
+                    gameListEl.innerHTML = gameHistory.map(g => `
+                        <div class="p-3 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                            <div>
+                                <h5 class="font-bold">${g.deckTitle} <span class="text-[10px] text-purple-500">(${g.mode})</span></h5>
+                                <p class="text-[10px] text-[var(--text-muted)]">${g.date} • ${g.progress}</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-xl bg-purple-500/10 text-purple-600 font-extrabold">${g.score} Pts</span>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        // Social & User Profile Modal Handlers
+        function openSocialModal() {
+            openUserProfileModal();
+            switchProfileTab('friends');
+        }
+
+        function openUserProfileModal() {
+            renderProfileStatsAndMastery();
+            renderFriendsList();
+            
+            // Set dynamic user profile initials and username
+            const name = currentUser ? currentUser.name : 'Guest';
+            const initial = name.charAt(0).toUpperCase();
+            const avatarEl = document.getElementById('profile-header-avatar');
+            const nameEl = document.getElementById('profile-header-name');
+            if (avatarEl) avatarEl.innerText = initial;
+            if (nameEl) nameEl.innerText = name;
+
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        function renderFriendsList() {
+            const listEl = document.getElementById('friends-profile-list');
+            if (!listEl) return;
+            if (userFriends.length === 0) {
+                listEl.innerHTML = `<div class="p-4 text-center text-xs text-[var(--text-muted)] font-bold">You are not following any friends yet. Search above to add friends!</div>`;
+                return;
+            }
+            listEl.innerHTML = userFriends.map(f => `
+                <div class="p-3.5 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-sm">
+                            ${f.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <h5 class="font-extrabold">${f.username}</h5>
+                            <p class="text-[10px] text-[var(--text-muted)]">Scholar • Following</p>
+                        </div>
+                    </div>
+                    <button onclick="unfollowFriend('${f.username}')" class="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-500 font-bold hover:bg-rose-500/20 apple-button">Unfollow</button>
+                </div>
+            `).join('');
+        }
+
+        function unfollowFriend(username) {
+            userFriends = userFriends.filter(f => f.username !== username);
+            localStorage.setItem(getUserStorageKey('friends'), JSON.stringify(userFriends));
+            renderFriendsList();
+            document.getElementById('stat-following-count').innerText = userFriends.length;
+        }
+
+        function renderProfileStatsAndMastery() {
+            // Populate overview stats
+            document.getElementById('stat-quizzes-taken').innerText = quizHistory.length;
+            const avg = quizHistory.length > 0 ? Math.round(quizHistory.reduce((a, b) => a + (b.score || 0), 0) / quizHistory.length) : 0;
+            document.getElementById('stat-avg-score').innerText = avg + '%';
+            document.getElementById('stat-following-count').innerText = userFriends.length;
+            
+            const totalArcadePts = gameHistory.reduce((acc, curr) => acc + (curr.score || 0), 0);
+            document.getElementById('stat-arcade-pts').innerText = totalArcadePts;
+
+            // Dynamically calculate Subject Mastery based on completed quizzes and game sessions per deck/title
+            const deckStats = {};
+
+            // Aggregate quiz runs
+            quizHistory.forEach(q => {
+                const title = q.title || 'General Knowledge';
+                if (!deckStats[title]) deckStats[title] = { count: 0, totalScore: 0 };
+                deckStats[title].count++;
+                deckStats[title].totalScore += (q.score || 0);
+            });
+
+            // Aggregate game runs
+            gameHistory.forEach(g => {
+                const title = g.deckTitle || 'General Knowledge';
+                if (!deckStats[title]) deckStats[title] = { count: 0, totalScore: 0 };
+                deckStats[title].count++;
+                // Bonus score contribution for game mastery
+                deckStats[title].totalScore += Math.min(100, (g.score || 0) / 20);
+            });
+
+            const masteryContainer = document.getElementById('subject-mastery-container');
+            if (masteryContainer) {
+                const keys = Object.keys(deckStats);
+                if (keys.length === 0) {
+                    masteryContainer.innerHTML = `<p class="text-xs text-[var(--text-muted)] font-bold text-center py-2">Complete quizzes or arcade games to generate your subject mastery stats!</p>`;
+                } else {
+                    masteryContainer.innerHTML = keys.map(title => {
+                        const data = deckStats[title];
+                        const pct = Math.min(100, Math.round(data.totalScore / data.count));
+                        return `
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span>${title}</span>
+                                    <span class="text-blue-500">${pct}% (${data.count} runs)</span>
+                                </div>
+                                <div class="w-full bg-stone-200 dark:bg-stone-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+        }
+
+        function switchProfileTab(tabName) {
+            const tabs = ['stats', 'friends'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const container = document.getElementById(`profile-tab-${t}`);
+                if (t === tabName) {
+                    btn.className = "pb-2 border-b-2 border-blue-600 text-blue-600 font-bold transition-all";
+                    container.classList.remove('hidden');
+                } else {
+                    btn.className = "pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all";
+                    container.classList.add('hidden');
+                }
+            });
+        }
+
+        function addFriendFromProfile() {
+            const input = document.getElementById('profile-friend-search');
+            const name = input.value.trim();
+            if (name) {
+                userFriends.push({ username: name, level: 'Scholar' });
+                localStorage.setItem('quizpulse_friends', JSON.stringify(userFriends));
+                input.value = '';
+                alertBoxCustom("Success", `Now following ${name}!`);
+            }
+        }
+
+        function closeFriendDetail() {
+            document.getElementById('friend-detail-view').classList.add('hidden');
+        }
+
+        // Theme Modal Handlers
+        function openThemeModal() {
+            document.getElementById('theme-modal').classList.remove('hidden');
+        }
+
+        function closeThemeModal() {
+            document.getElementById('theme-modal').classList.add('hidden');
+        }
+
+        function setTheme(themeName) {
+            // Remove any existing theme- classes from body
+            document.body.className = document.body.className.replace(/\btheme-\S+/g, '');
+            if (themeName !== 'light') {
+                document.body.classList.add('theme-' + themeName);
+            }
+            localStorage.setItem('quizpulse_theme', themeName);
+
+            // Update checkmark indicators and border outline highlights across theme buttons
+            ['light', 'dark', 'cyber', 'pastel'].forEach(t => {
+                const checkEl = document.getElementById(`check-${t}`);
+                const btnEl = document.getElementById(`theme-btn-${t}`);
+                if (checkEl) {
+                    if (t === themeName) {
+                        checkEl.classList.remove('hidden');
+                        if (btnEl) btnEl.classList.add('ring-2', 'ring-offset-2', 'ring-purple-600', 'border-purple-600');
+                    } else {
+                        checkEl.classList.add('hidden');
+                        if (btnEl) btnEl.classList.remove('ring-2', 'ring-offset-2', 'ring-purple-600', 'border-purple-600');
+                    }
+                }
+            });
+
+            closeThemeModal();
+        }
+
+        // Load saved theme on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('quizpulse_theme') || 'light';
+            setTheme(savedTheme);
+        });
+
+        // Native Auth Modal Handlers & Account Sign-In / Sign-Out Flow
+        function handleProfileNavClick() {
+            if (currentUser) {
+                // If already signed in, open sign out confirmation modal
+                document.getElementById('signout-modal').classList.remove('hidden');
+            } else {
+                // If not signed in, open Sign In / Register modal
+                openAuthModal();
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function closeSignOutModal() {
+            document.getElementById('signout-modal').classList.add('hidden');
+        }
+
+        function submitNativeAuth() {
+            const usernameInput = document.getElementById('auth-username').value.trim();
+            if (usernameInput) {
+                currentUser = { name: usernameInput };
+                localStorage.setItem('quizpulse_user', JSON.stringify(currentUser));
+                loadUserAppData(); // Load data specific to this user account
+                document.getElementById('profile-nav-name').innerText = currentUser.name;
+                closeAuthModal();
+                alertBoxCustom("Welcome Back!", `Signed in successfully as ${currentUser.name}.`);
+            }
+        }
+
+        function confirmSignOut() {
+            currentUser = null;
+            localStorage.removeItem('quizpulse_user');
+            loadUserAppData(); // Reset to guest/empty scopes
+            document.getElementById('profile-nav-name').innerText = "Sign In";
+            closeSignOutModal();
+            alertBoxCustom("Signed Out", "You have successfully signed out of your account.");
+            goToHome();
+        }
+
+        // Trivia Modal Handler
+        function triggerTriviaModal(callback) {
+            currentTriviaCallback = callback;
+            if (!currentQuizQuestions || currentQuizQuestions.length === 0) {
+                currentQuizQuestions = premadeQuizzes[0].questions;
+            }
+            const q = currentQuizQuestions[Math.floor(Math.random() * currentQuizQuestions.length)];
+            
+            document.getElementById('game-q-text').innerText = q.question;
+            const container = document.getElementById('game-q-options');
+            container.innerHTML = q.options.map(opt => `
+                <button onclick="answerTriviaChoice('${opt.id}', '${q.answer}')" class="w-full p-3.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-muted)] hover:bg-purple-600 hover:text-white font-semibold text-xs text-left transition-all apple-button">
+                    <span class="font-bold mr-2">${opt.id}.</span> ${opt.text}
+                </button>
+            `).join('');
+
+            document.getElementById('game-question-modal').classList.remove('hidden');
+        }
+
+        function answerTriviaChoice(selected, correct) {
+            document.getElementById('game-question-modal').classList.add('hidden');
+            if (selected === correct) {
+                if (currentTriviaCallback) currentTriviaCallback(true);
+            } else {
+                alertBoxCustom("Incorrect Answer", "The correct answer was option " + correct);
+                if (currentTriviaCallback) currentTriviaCallback(false);
+            }
+        }
+
+        function alertBoxCustom(title, text) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = "fixed top-6 right-6 z-50 glass-panel border border-purple-500/30 p-4 rounded-2xl shadow-2xl text-xs max-w-sm animate-bounce";
+            alertDiv.innerHTML = `<h5 class="font-extrabold text-purple-600">${title}</h5><p class="text-[var(--text-muted)] font-bold">${text}</p>`;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => { alertDiv.remove(); }, 2500);
+        }
+
+        // Quiz Selector Modal Handlers
+        function openQuizSelectorModal() {
+            renderSavedQuizzesList();
+            renderQuizPresetsList();
+            switchQuizSourceTab('saved'); // Default to Saved Quizzes tab first
+            document.getElementById('quiz-selector-modal').classList.remove('hidden');
+        }
+
+        function closeQuizSelectorModal() {
+            document.getElementById('quiz-selector-modal').classList.add('hidden');
+        }
+
+        function switchQuizSourceTab(tabName) {
+            const tabs = ['saved', 'import', 'presets'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`qtab-${t}`);
+                const container = document.getElementById(`qcontainer-${t}`);
+                if (t === tabName) {
+                    btn.className = "pb-2 border-b-2 border-blue-600 text-blue-600 font-bold transition-all";
+                    container.classList.remove('hidden');
+                } else {
+                    btn.className = "pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all";
+                    container.classList.add('hidden');
+                }
+            });
+        }
+
+        function renderSavedQuizzesList() {
+            const container = document.getElementById('qcontainer-saved');
+            if (!container) return;
+            if (savedQuizzes.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center space-y-2"><i class="fa-solid fa-box-open text-3xl text-[var(--text-muted)]"></i><p class="text-xs text-[var(--text-muted)] font-bold">No saved quizzes yet. Import material or analyze files to create saved quizzes!</p></div>`;
+                return;
+            }
+            container.innerHTML = savedQuizzes.map(sq => `
+                <div class="p-3.5 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] flex items-center justify-between">
+                    <div>
+                        <h5 class="text-xs font-bold">${sq.title}</h5>
+                        <p class="text-[10px] text-[var(--text-muted)]">${sq.questions.length} Questions • Saved Import</p>
+                    </div>
+                    <button onclick="selectSavedQuiz('${sq.id}')" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs apple-button">Load & Play</button>
+                </div>
+            `).join('');
+        }
+
+        function renderQuizPresetsList(filter = '') {
+            const container = document.getElementById('qcontainer-presets-list');
+            if (!container) return;
+            const filtered = premadeQuizzes.filter(q => q.title.toLowerCase().includes(filter.toLowerCase()));
+            
+            container.innerHTML = filtered.map(q => `
+                <div class="p-3.5 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] flex items-center justify-between">
+                    <div>
+                        <h5 class="text-xs font-bold">${q.title}</h5>
+                        <p class="text-[10px] text-[var(--text-muted)]">${q.questions.length} Questions • Premade</p>
+                    </div>
+                    <button onclick="selectPresetQuiz('${q.id}')" class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs apple-button">Select</button>
+                </div>
+            `).join('');
+        }
+
+        function filterQuizPresets() {
+            const val = document.getElementById('quiz-search-input').value;
+            renderQuizPresetsList(val);
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('import-file-label').innerText = `Uploaded: ${file.name}`;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedFileContent = e.target.result;
+                };
+                if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                    uploadedFileContent = `[PDF Document: ${file.name}] Contains academic study notes and review material.`;
+                } else if (file.type.startsWith('image/')) {
+                    uploadedFileContent = `[Image Document: ${file.name}] Contains visual diagrams, text notes, and educational concepts.`;
+                } else {
+                    reader.readAsText(file);
+                }
+            }
+        }
+
+        async function analyzeAndSaveImportedQuiz() {
+            const titleInput = document.getElementById('import-quiz-title').value.trim();
+            const textInput = document.getElementById('import-quiz-data').value.trim();
+            const targetCount = parseInt(document.getElementById('import-question-count-input').value) || 10;
+            
+            const title = titleInput || 'AI Analyzed Study Quiz';
+            const rawSource = textInput || uploadedFileContent || "General academic concepts and study notes.";
+
+            const analyzeBtn = document.getElementById('ai-analyze-btn');
+            analyzeBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analyzing with AI...`;
+            analyzeBtn.disabled = true;
+
+            let generatedQuestions = [];
+            try {
+                const systemPrompt = `You are an expert AI tutor and question generator. Based on the provided source material, generate exactly ${targetCount} multiple-choice questions. Each question must test understanding of the material and have 4 options (A, B, C, D) with one correct answer ID ('A', 'B', 'C', or 'D'). Return the result strictly as a JSON array.`;
+                const userQuery = `Source material to analyze and convert into ${targetCount} quiz questions:\n\n${rawSource}`;
+                
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    id: { type: "INTEGER" },
+                                    question: { type: "STRING" },
+                                    answer: { type: "STRING", description: "Must be 'A', 'B', 'C', or 'D'" },
+                                    options: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: {
+                                                id: { type: "STRING", description: "'A', 'B', 'C', or 'D'" },
+                                                text: { type: "STRING" }
+                                            },
+                                            propertyOrdering: ["id", "text"]
+                                        }
+                                    }
+                                },
+                                propertyOrdering: ["id", "question", "answer", "options"]
+                            }
+                        }
+                    }
+                };
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const parsed = JSON.parse(candidate.content.parts[0].text);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        generatedQuestions = parsed.map((q, idx) => ({
+                            id: idx + 1,
+                            question: q.question || `Question ${idx + 1}`,
+                            answer: (q.answer || 'A').toUpperCase(),
+                            options: q.options && q.options.length === 4 ? q.options : [
+                                { id: "A", text: "Option A" },
+                                { id: "B", text: "Option B" },
+                                { id: "C", text: "Option C" },
+                                { id: "D", text: "Option D" }
+                            ]
+                        }));
+                    }
+                }
+            } catch (err) {
+                console.error("AI Generation error, falling back to smart extraction:", err);
+            }
+
+            // Fallback if API response is empty
+            if (generatedQuestions.length === 0) {
+                const sentences = rawSource.split(/[.?!]\s+/).filter(s => s.length > 10);
+                for (let i = 0; i < targetCount; i++) {
+                    const baseSentence = sentences[i % sentences.length] || `Key concept regarding ${title} #${i + 1}`;
+                    generatedQuestions.push({
+                        id: i + 1,
+                        question: `According to your imported material, what is significant about: "${baseSentence.substring(0, 60)}..."?`,
+                        answer: "A",
+                        options: [
+                            { id: "A", text: `It represents a core principle detailed in the source notes.` },
+                            { id: "B", text: `It is an unrelated historical footnote.` },
+                            { id: "C", text: `It contradicts the primary thesis statement.` },
+                            { id: "D", text: `It was excluded from the final syllabus summary.` }
+                        ]
+                    });
+                }
+            }
+
+            const newSavedQuiz = {
+                id: 'sq_' + Date.now(),
+                title: title,
+                questions: generatedQuestions
+            };
+
+            savedQuizzes.push(newSavedQuiz);
+            localStorage.setItem(getUserStorageKey('saved_quizzes'), JSON.stringify(savedQuizzes));
+
+            analyzeBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i><span>AI Analyze & Generate Quiz</span>`;
+            analyzeBtn.disabled = false;
+
+            currentQuizQuestions = generatedQuestions;
+            closeQuizSelectorModal();
+            openPreQuizModal('saved');
+        }
+
+        async function analyzeAndSaveImportedGame() {
+            const titleInput = document.getElementById('import-game-title').value.trim();
+            const textInput = document.getElementById('import-game-data').value.trim();
+            const title = titleInput || 'AI Analyzed Arcade Quiz';
+            const rawSource = textInput || uploadedFileContent || "General academic concepts.";
+
+            const analyzeBtn = document.getElementById('ai-analyze-game-btn');
+            analyzeBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analyzing with AI...`;
+            analyzeBtn.disabled = true;
+
+            let generatedQuestions = [];
+            try {
+                const systemPrompt = "Generate 10 multiple-choice questions based on the source text. Return strictly as a JSON array.";
+                const payload = {
+                    contents: [{ parts: [{ text: rawSource }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    id: { type: "INTEGER" },
+                                    question: { type: "STRING" },
+                                    answer: { type: "STRING" },
+                                    options: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: {
+                                                id: { type: "STRING" },
+                                                text: { type: "STRING" }
+                                            },
+                                            propertyOrdering: ["id", "text"]
+                                        }
+                                    }
+                                },
+                                propertyOrdering: ["id", "question", "answer", "options"]
+                            }
+                        }
+                    }
+                };
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const parsed = JSON.parse(candidate.content.parts[0].text);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        generatedQuestions = parsed.map((q, idx) => ({
+                            id: idx + 1,
+                            question: q.question,
+                            answer: (q.answer || 'A').toUpperCase(),
+                            options: q.options || [{id:"A",text:"A"},{id:"B",text:"B"},{id:"C",text:"C"},{id:"D",text:"D"}]
+                        }));
+                    }
+                }
+            } catch (err) {
+                console.error("AI Gen error:", err);
+            }
+
+            if (generatedQuestions.length === 0) {
+                for (let i = 1; i <= 10; i++) {
+                    generatedQuestions.push({
+                        id: i,
+                        question: `Arcade Question ${i} for ${title}`,
+                        answer: "A",
+                        options: [
+                            { id: "A", text: `Accurate correct concept statement ${i}` },
+                            { id: "B", text: `Plausible distractor alpha ${i}` },
+                            { id: "C", text: `Alternative misconception beta ${i}` },
+                            { id: "D", text: `Secondary distractor gamma ${i}` }
+                        ]
+                    });
+                }
+            }
+
+            const newSaved = {
+                id: 'sq_' + Date.now(),
+                title: title,
+                questions: generatedQuestions
+            };
+            savedQuizzes.push(newSaved);
+            localStorage.setItem(getUserStorageKey('saved_quizzes'), JSON.stringify(savedQuizzes));
+
+            analyzeBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i><span>AI Analyze & Select Material</span>`;
+            analyzeBtn.disabled = false;
+
+            proceedToGameOptions(title, generatedQuestions);
+        }
+
+        function selectPresetQuiz(id) {
+            const found = premadeQuizzes.find(p => p.id === id);
+            if (found) {
+                currentQuizQuestions = found.questions;
+                closeQuizSelectorModal();
+                openPreQuizModal('preset');
+            }
+        }
+
+        function selectSavedQuiz(id) {
+            const found = savedQuizzes.find(s => s.id === id);
+            if (found) {
+                currentQuizQuestions = found.questions;
+                closeQuizSelectorModal();
+                openPreQuizModal('saved');
+            }
+        }
+
+        // Games Arcade Selector Handlers
+        function openGamesSelectorModal() {
+            renderSavedGamesList();
+            renderGamePresetsList();
+            switchGameSourceTab('saved');
+            
+            // Reset to Step 1 (Material Selection)
+            document.getElementById('games-step-1').classList.remove('hidden');
+            document.getElementById('games-step-2').classList.add('hidden');
+            document.getElementById('games-modal-title').innerText = "Games Arcade Hub";
+            document.getElementById('games-modal-subtitle').innerText = "Choose from your saved imports or explore AI-analyzed quizzes";
+            
+            document.getElementById('games-selector-modal').classList.remove('hidden');
+        }
+
+        function closeGamesSelectorModal() {
+            document.getElementById('games-selector-modal').classList.add('hidden');
+        }
+
+        function switchGameSourceTab(tabName) {
+            const tabs = ['saved', 'import', 'presets'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`gtab-${t}`);
+                const container = document.getElementById(`gcontainer-${t}`);
+                if (t === tabName) {
+                    btn.className = "pb-2 border-b-2 border-purple-600 text-purple-600 font-bold transition-all";
+                    container.classList.remove('hidden');
+                } else {
+                    btn.className = "pb-2 text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold border-b-2 border-transparent transition-all";
+                    container.classList.add('hidden');
+                }
+            });
+        }
+
+        function renderSavedGamesList() {
+            const container = document.getElementById('gcontainer-saved');
+            if (!container) return;
+            if (savedQuizzes.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center space-y-2"><i class="fa-solid fa-box-open text-3xl text-[var(--text-muted)]"></i><p class="text-xs text-[var(--text-muted)] font-bold">No saved quizzes yet. Import material to create saved quizzes!</p></div>`;
+                return;
+            }
+            container.innerHTML = savedQuizzes.map(sq => `
+                <div class="p-3.5 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] flex items-center justify-between">
+                    <div>
+                        <h5 class="text-xs font-bold">${sq.title}</h5>
+                        <p class="text-[10px] text-[var(--text-muted)]">${sq.questions.length} Questions • Saved Import</p>
+                    </div>
+                    <button onclick="proceedToGameOptions('${sq.title}', ${JSON.stringify(sq.questions).replace(/"/g, '&quot;')})" class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs apple-button">Select Material</button>
+                </div>
+            `).join('');
+        }
+
+        function renderGamePresetsList(filter = '') {
+            const container = document.getElementById('gcontainer-presets-list');
+            if (!container) return;
+            const filtered = premadeQuizzes.filter(q => q.title.toLowerCase().includes(filter.toLowerCase()));
+            
+            container.innerHTML = filtered.map(q => `
+                <div class="p-3.5 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border-subtle)] flex items-center justify-between">
+                    <div>
+                        <h5 class="text-xs font-bold">${q.title}</h5>
+                        <p class="text-[10px] text-[var(--text-muted)]">${q.questions.length} Questions • Premade</p>
+                    </div>
+                    <button onclick="proceedToGameOptions('${q.title}', ${JSON.stringify(q.questions).replace(/"/g, '&quot;')})" class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs apple-button">Select</button>
+                </div>
+            `).join('');
+        }
+
+        function filterGamePresets() {
+            const val = document.getElementById('game-search-input').value;
+            renderGamePresetsList(val);
+        }
+
+        function handleGameFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('import-game-file-label').innerText = `Uploaded: ${file.name}`;
+                if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                    uploadedFileContent = `[PDF Document: ${file.name}] Contains academic study notes.`;
+                } else if (file.type.startsWith('image/')) {
+                    uploadedFileContent = `[Image Document: ${file.name}] Contains visual notes.`;
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedFileContent = e.target.result;
+                    };
+                    reader.readAsText(file);
+                }
+            }
+        }
+
+        async function analyzeAndSaveImportedGame() {
+            const titleInput = document.getElementById('import-game-title').value.trim();
+            const textInput = document.getElementById('import-game-data').value.trim();
+            const title = titleInput || 'AI Analyzed Arcade Quiz';
+            const rawSource = textInput || uploadedFileContent || "General academic concepts.";
+
+            const analyzeBtn = document.getElementById('ai-analyze-game-btn');
+            analyzeBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analyzing with AI...`;
+            analyzeBtn.disabled = true;
+
+            let generatedQuestions = [];
+            try {
+                const systemPrompt = "Generate 10 multiple-choice questions based on the source text. Return strictly as a JSON array.";
+                const payload = {
+                    contents: [{ parts: [{ text: rawSource }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    id: { type: "INTEGER" },
+                                    question: { type: "STRING" },
+                                    answer: { type: "STRING" },
+                                    options: {
+                                        type: "ARRAY",
+                                        items: {
+                                            type: "OBJECT",
+                                            properties: {
+                                                id: { type: "STRING" },
+                                                text: { type: "STRING" }
+                                            },
+                                            propertyOrdering: ["id", "text"]
+                                        }
+                                    }
+                                },
+                                propertyOrdering: ["id", "question", "answer", "options"]
+                            }
+                        }
+                    }
+                };
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const parsed = JSON.parse(candidate.content.parts[0].text);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        generatedQuestions = parsed.map((q, idx) => ({
+                            id: idx + 1,
+                            question: q.question,
+                            answer: (q.answer || 'A').toUpperCase(),
+                            options: q.options || [{id:"A",text:"A"},{id:"B",text:"B"},{id:"C",text:"C"},{id:"D",text:"D"}]
+                        }));
+                    }
+                }
+            } catch (err) {
+                console.error("AI Gen error:", err);
+            }
+
+            if (generatedQuestions.length === 0) {
+                for (let i = 1; i <= 10; i++) {
+                    generatedQuestions.push({
+                        id: i,
+                        question: `Arcade Question ${i} for ${title}`,
+                        answer: "A",
+                        options: [
+                            { id: "A", text: `Accurate correct concept statement ${i}` },
+                            { id: "B", text: `Plausible distractor alpha ${i}` },
+                            { id: "C", text: `Alternative misconception beta ${i}` },
+                            { id: "D", text: `Secondary distractor gamma ${i}` }
+                        ]
+                    });
+                }
+            }
+
+            const newSaved = {
+                id: 'sq_' + Date.now(),
+                title: title,
+                questions: generatedQuestions
+            };
+            savedQuizzes.push(newSaved);
+            localStorage.setItem('quizpulse_saved_quizzes', JSON.stringify(savedQuizzes));
+
+            analyzeBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i><span>AI Analyze & Select Material</span>`;
+            analyzeBtn.disabled = false;
+
+            proceedToGameOptions(title, generatedQuestions);
+        }
+
+        function proceedToGameOptions(title, questions) {
+            currentQuizQuestions = questions;
+            activeDeckTitle = title;
+            document.getElementById('selected-game-material-title').innerText = title;
+
+            // Switch to Step 2 (Secondary Game Options Screen)
+            document.getElementById('games-step-1').classList.add('hidden');
+            document.getElementById('games-step-2').classList.remove('hidden');
+            document.getElementById('games-modal-title').innerText = "Configure Game Mode";
+            document.getElementById('games-modal-subtitle').innerText = "Select your preferred arcade game environment";
+        }
+
+        function backToGameMaterialSelect() {
+            document.getElementById('games-step-2').classList.add('hidden');
+            document.getElementById('games-step-1').classList.remove('hidden');
+            document.getElementById('games-modal-title').innerText = "Games Arcade Hub";
+            document.getElementById('games-modal-subtitle').innerText = "Choose from your saved imports or explore AI-analyzed quizzes";
+        }
+
+        function selectArcadeGameType(mode) {
+            selectedArcadeGameMode = mode;
+            ['3dworld', 'tower', 'speed'].forEach(m => {
+                const btn = document.getElementById(`gopt-${m}`);
+                if (m === mode) {
+                    btn.className = "p-4 rounded-2xl bg-purple-600 text-white font-bold text-xs border border-purple-500 shadow-md text-left flex flex-col justify-between h-24 apple-button";
+                } else {
+                    btn.className = "p-4 rounded-2xl bg-[var(--surface-muted)] text-[var(--text-main)] font-bold text-xs border border-[var(--border-subtle)] hover:border-purple-500/50 text-left flex flex-col justify-between h-24 apple-button";
+                }
+            });
+        }
+
+        function launchFinalArcadeGameSession() {
+            closeGamesSelectorModal();
+            startArcadeGame();
+        }
+
+        function launchArcadeWithSaved(id) {
+            const found = savedQuizzes.find(s => s.id === id);
+            if (found) {
+                currentQuizQuestions = found.questions;
+            }
+            closeGamesSelectorModal();
+            startArcadeGame();
+        }
+
+        function selectArcadeGameType(mode) {
+            selectedArcadeGameMode = mode;
+            ['3dworld', 'tower', 'speed'].forEach(m => {
+                const btn = document.getElementById(`gopt-${m}`);
+                if (m === mode) {
+                    btn.className = "p-3.5 rounded-2xl bg-purple-600 text-white font-bold text-xs border border-purple-500 shadow-md text-left flex flex-col justify-between h-20 apple-button";
+                } else {
+                    btn.className = "p-3.5 rounded-2xl bg-[var(--surface-muted)] text-[var(--text-main)] font-bold text-xs border border-[var(--border-subtle)] hover:border-purple-500/50 text-left flex flex-col justify-between h-20 apple-button";
+                }
+            });
+        }
+
+        function launchFinalArcadeGameSession() {
+            closeGamesSelectorModal();
+            startArcadeGame();
+        }
+
+        // 3D Arcade Game Launch & Distinct Game Loops
+        function startArcadeGame() {
+            document.getElementById('home-dashboard').classList.add('hidden');
+            document.getElementById('arcade-game-view').classList.remove('hidden');
+            
+            arcadeScore = 0;
+            document.getElementById('arcade-score-val').innerText = arcadeScore;
+
+            if (selectedArcadeGameMode === '3dworld') {
+                document.getElementById('arcade-active-mode-title').innerText = "3D Space Crystal Runner";
+                document.getElementById('arcade-active-instructions').innerText = "Use On-Screen Joystick or Arrow Keys to dodge moving obstacles and collect pulsing crystals!";
+                init3DWorldGame();
+            } else if (selectedArcadeGameMode === 'tower') {
+                document.getElementById('arcade-active-mode-title').innerText = "Tower Defense Arena";
+                document.getElementById('arcade-active-instructions').innerText = "Defend your base! Answer trivia correctly to upgrade towers and repel enemy waves!";
+                initTowerDefenseGame();
+            } else if (selectedArcadeGameMode === 'speed') {
+                document.getElementById('arcade-active-mode-title').innerText = "Speed Quiz Rush";
+                document.getElementById('arcade-active-instructions').innerText = "Rapid fire Q&A! Answer as many questions as possible before the timer runs out!";
+                initSpeedQuizGame();
+            }
+        }
+
+        // ==========================================
+        // GAME 1: 3D SPACE INVADERS (UPDATED)
+        // ==========================================
+        let spaceInvaderLives = 3;
+        let spaceInvaderLevel = 1;
+        let spaceInvaderTimer = 15;
+        let spaceInvaderInterval = null;
+        let postTriviaGracePeriod = false;
+
+        function init3DWorldGame() {
+            const container = document.getElementById('arcade-canvas-container') || document.getElementById('arcade-game-container');
+            spaceInvaderLives = 3;
+            spaceInvaderLevel = 1;
+            spaceInvaderTimer = 15;
+            arcadeGameActive = false;
+            postTriviaGracePeriod = false;
+
+            container.innerHTML = `
+                <canvas id="arcade-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+                <!-- On-Screen Virtual Joystick Container -->
+                <div id="virtual-joystick" class="absolute bottom-6 left-6 w-32 h-32 rounded-full bg-black/40 border-2 border-purple-500/40 backdrop-blur-md touch-none flex items-center justify-center shadow-2xl">
+                    <div id="joystick-knob" class="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-cyan-400 shadow-lg absolute pointer-events-none transition-transform duration-75"></div>
+                </div>
+                <!-- Top HUD Overlay -->
+                <div class="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none px-4 py-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/15 text-white text-xs font-extrabold">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-heart text-rose-500"></i>
+                        <span>Lives: <span id="si-lives">3</span>/3</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-layer-group text-purple-400"></i>
+                        <span>Level <span id="si-level">1</span></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-clock text-amber-400"></i>
+                        <span><span id="si-timer">15</span>s</span>
+                    </div>
+                </div>
+            `;
+            
+            const controlsBar = document.getElementById('arcade-controls-bar');
+            controlsBar.innerHTML = `
+                <div class="flex items-center space-x-3 text-xs font-bold text-[var(--text-muted)]">
+                    <i class="fa-solid fa-gamepad text-purple-500 text-base"></i>
+                    <span>Use the <strong>Virtual Joystick</strong> or <strong>WASD / Arrow Keys</strong> to dodge enemy laser projectiles! Enemy count & speed scale with each level.</span>
+                </div>
+            `;
+
+            const canvas = document.getElementById('arcade-canvas');
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x06030e);
+            scene.fog = new THREE.FogExp2(0x06030e, 0.035);
+
+            const camera = new THREE.PerspectiveCamera(65, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 9, 15);
+            camera.lookAt(0, 0, 0);
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+
+            // Vibrant Neon Lighting
+            scene.add(new THREE.AmbientLight(0xe879f9, 1.8));
+            const dirLight = new THREE.DirectionalLight(0x38bdf8, 2.5);
+            dirLight.position.set(20, 40, 20);
+            scene.add(dirLight);
+
+            // Rich Starfield Background Environment
+            const starsGeo = new THREE.BufferGeometry();
+            const starsCount = 1200;
+            const starPositions = new Float32Array(starsCount * 3);
+            for (let i = 0; i < starsCount * 3; i += 3) {
+                starPositions[i] = (Math.random() - 0.5) * 300;
+                starPositions[i + 1] = Math.random() * 100 + 10;
+                starPositions[i + 2] = (Math.random() - 0.5) * 300;
+            }
+            starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+            const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.85 });
+            const starField = new THREE.Points(starsGeo, starsMat);
+            scene.add(starField);
+
+            // Glowing Nebula Spheres in Background
+            const nebulaGeo = new THREE.SphereGeometry(25, 16, 16);
+            const nebulaMat1 = new THREE.MeshBasicMaterial({ color: 0x7e22ce, transparent: true, opacity: 0.15, side: THREE.BackSide });
+            const nebulaMat2 = new THREE.MeshBasicMaterial({ color: 0x0284c7, transparent: true, opacity: 0.12, side: THREE.BackSide });
+            const nebula1 = new THREE.Mesh(nebulaGeo, nebulaMat1);
+            nebula1.position.set(-40, 20, -50);
+            scene.add(nebula1);
+            const nebula2 = new THREE.Mesh(nebulaGeo, nebulaMat2);
+            nebula2.position.set(40, 15, -60);
+            scene.add(nebula2);
+
+            // Cyberpunk Grid Track Floor
+            const gridHelper = new THREE.GridHelper(100, 60, 0xec4899, 0x3b82f6);
+            gridHelper.position.y = -0.01;
+            scene.add(gridHelper);
+
+            // Textured Metallic Player Starfighter with Engine Glow & Shield Ring
+            const playerGroup = new THREE.Group();
+            const bodyGeo = new THREE.ConeGeometry(0.75, 2.4, 6);
+            const bodyMat = new THREE.MeshStandardMaterial({ 
+                color: 0x0ea5e9, 
+                emissive: 0x0284c7, 
+                roughness: 0.15, 
+                metalness: 0.95 
+            });
+            const shipBody = new THREE.Mesh(bodyGeo, bodyMat);
+            shipBody.rotation.x = Math.PI / 2;
+            playerGroup.add(shipBody);
+
+            const wingGeo = new THREE.BoxGeometry(2.4, 0.08, 1.0);
+            const wingMat = new THREE.MeshStandardMaterial({ 
+                color: 0xf43f5e, 
+                emissive: 0xbe185d, 
+                roughness: 0.2, 
+                metalness: 0.85 
+            });
+            const wings = new THREE.Mesh(wingGeo, wingMat);
+            wings.position.set(0, 0, 0.3);
+            playerGroup.add(wings);
+
+            // Rear Thruster Light Glow
+            const thrusterGeo = new THREE.CylinderGeometry(0.2, 0.35, 0.6, 8);
+            const thrusterMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+            const thruster = new THREE.Mesh(thrusterGeo, thrusterMat);
+            thruster.rotation.x = Math.PI / 2;
+            thruster.position.set(0, 0, 1.3);
+            playerGroup.add(thruster);
+
+            // Energy Shield Ring Around Player
+            const shieldGeo = new THREE.TorusGeometry(1.6, 0.04, 12, 30);
+            const shieldMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.5 });
+            const shieldRing = new THREE.Mesh(shieldGeo, shieldMat);
+            shieldRing.rotation.x = Math.PI / 2;
+            playerGroup.add(shieldRing);
+
+            playerGroup.position.set(0, 1.0, 4);
+            scene.add(playerGroup);
+
+            // Enemy Metallic Textures & Models
+            const enemies = [];
+            const invBodyGeo = new THREE.ConeGeometry(1.2, 2.6, 6);
+            const invBodyMat = new THREE.MeshStandardMaterial({ color: 0xe11d48, emissive: 0x881337, roughness: 0.2, metalness: 0.9 });
+            const invWingsGeo = new THREE.BoxGeometry(3.4, 0.1, 1.2);
+            const invWingsMat = new THREE.MeshStandardMaterial({ color: 0x9333ea, emissive: 0x581c87, roughness: 0.2, metalness: 0.85 });
+
+            function spawnEnemiesForCurrentLevel() {
+                // Clear existing enemies
+                enemies.forEach(e => scene.remove(e.group));
+                enemies.length = 0;
+
+                const count = Math.min(4, Math.floor((spaceInvaderLevel + 1) / 2)); // 1 to 4 enemies based on level
+                const spacing = 10;
+                const startX = -((count - 1) * spacing) / 2;
+
+                for (let i = 0; i < count; i++) {
+                    const enemyGroup = new THREE.Group();
+                    const invBody = new THREE.Mesh(invBodyGeo, invBodyMat);
+                    invBody.rotation.x = -Math.PI / 2;
+                    enemyGroup.add(invBody);
+                    const invWings = new THREE.Mesh(invWingsGeo, invWingsMat);
+                    enemyGroup.add(invWings);
+
+                    enemyGroup.position.set(startX + i * spacing, 1.0, -10 - (i % 2) * 3);
+                    scene.add(enemyGroup);
+                    enemies.push({ group: enemyGroup, moveOffset: i * 2.0, speedMultiplier: 1.0 + (spaceInvaderLevel - 1) * 0.25 });
+                }
+            }
+            spawnEnemiesForCurrentLevel();
+
+            // Enemy Projectiles Array
+            const projectiles = [];
+            const projGeo = new THREE.SphereGeometry(0.35, 12, 12);
+            const projMat = new THREE.MeshStandardMaterial({ color: 0xff0055, emissive: 0xff0055, roughness: 0.1 });
+
+            // Shoot Projectile Timer (Paused during trivia or post-trivia grace period)
+            const shootInterval = setInterval(() => {
+                // Ensure no enemy can shoot while answering trivia (arcadeGameActive) or during post-trivia grace period
+                if (arcadeGameActive || postTriviaGracePeriod || spaceInvaderLives <= 0) return;
+
+                enemies.forEach(enemy => {
+                    const proj = new THREE.Mesh(projGeo, projMat);
+                    proj.position.copy(enemy.group.position);
+                    // Shoot directly forward along Z-axis while tracking player X position slightly
+                    const targetX = playerGroup.position.x;
+                    const dirX = (targetX - enemy.group.position.x) * 0.02;
+                    proj.userData = { velocity: new THREE.Vector3(dirX, 0, (0.35 + spaceInvaderLevel * 0.08)) };
+                    scene.add(proj);
+                    projectiles.push(proj);
+                });
+            }, Math.max(400, 1100 - spaceInvaderLevel * 100));
+
+            // Level & Timer Countdown Interval (15 seconds per level)
+            if (spaceInvaderInterval) clearInterval(spaceInvaderInterval);
+            spaceInvaderInterval = setInterval(() => {
+                // Pause level countdown while trivia question modal is open
+                if (arcadeGameActive) return;
+
+                spaceInvaderTimer--;
+                const timerEl = document.getElementById('si-timer');
+                if (timerEl) timerEl.innerText = spaceInvaderTimer;
+
+                if (spaceInvaderTimer <= 0) {
+                    spaceInvaderLevel++;
+                    spaceInvaderTimer = 15;
+                    
+                    // Award +1 life upon passing each level (max 3)
+                    if (spaceInvaderLives < 3) {
+                        spaceInvaderLives++;
+                        const livesEl = document.getElementById('si-lives');
+                        if (livesEl) livesEl.innerText = spaceInvaderLives;
+                    }
+
+                    const lvlEl = document.getElementById('si-level');
+                    if (lvlEl) lvlEl.innerText = spaceInvaderLevel;
+                    arcadeScore += spaceInvaderLevel * 300;
+                    document.getElementById('arcade-score-val').innerText = arcadeScore;
+                    spawnEnemiesForCurrentLevel();
+                    alertBoxCustom(`Level ${spaceInvaderLevel} Reached!`, `Reinforcements arrived! +1 Life Awarded (Lives: ${spaceInvaderLives}/3).`);
+                }
+            }, 1000);
+
+            // Virtual Joystick Logic
+            const joystickEl = document.getElementById('virtual-joystick');
+            const knobEl = document.getElementById('joystick-knob');
+            let joystickActive = false;
+            let joystickVector = { x: 0, z: 0 };
+            let joystickCenter = { x: 0, y: 0 };
+
+            joystickEl.addEventListener('touchstart', (e) => {
+                joystickActive = true;
+                const rect = joystickEl.getBoundingClientRect();
+                joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!joystickActive) return;
+                const touch = e.touches[0];
+                const dx = touch.clientX - joystickCenter.x;
+                const dy = touch.clientY - joystickCenter.y;
+                const dist = Math.hypot(dx, dy);
+                const maxRadius = 45;
+                const angle = Math.atan2(dy, dx);
+                const clampedDist = Math.min(dist, maxRadius);
+
+                const knobX = Math.cos(angle) * clampedDist;
+                const knobY = Math.sin(angle) * clampedDist;
+                knobEl.style.transform = `translate(${knobX}px, ${knobY}px)`;
+
+                joystickVector.x = (knobX / maxRadius);
+                joystickVector.z = (knobY / maxRadius);
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => {
+                joystickActive = false;
+                joystickVector = { x: 0, z: 0 };
+                knobEl.style.transform = `translate(0px, 0px)`;
+            });
+
+            joystickEl.addEventListener('mousedown', (e) => {
+                joystickActive = true;
+                const rect = joystickEl.getBoundingClientRect();
+                joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!joystickActive) return;
+                const dx = e.clientX - joystickCenter.x;
+                const dy = e.clientY - joystickCenter.y;
+                const dist = Math.hypot(dx, dy);
+                const maxRadius = 45;
+                const angle = Math.atan2(dy, dx);
+                const clampedDist = Math.min(dist, maxRadius);
+
+                const knobX = Math.cos(angle) * clampedDist;
+                const knobY = Math.sin(angle) * clampedDist;
+                knobEl.style.transform = `translate(${knobX}px, ${knobY}px)`;
+
+                joystickVector.x = (knobX / maxRadius);
+                joystickVector.z = (knobY / maxRadius);
+            });
+
+            window.addEventListener('mouseup', () => {
+                joystickActive = false;
+                joystickVector = { x: 0, z: 0 };
+                knobEl.style.transform = `translate(0px, 0px)`;
+            });
+
+            // Keyboard Controls
+            const keysPressed = {};
+            window.addEventListener('keydown', (e) => { keysPressed[e.key.toLowerCase()] = true; });
+            window.addEventListener('keyup', (e) => { keysPressed[e.key.toLowerCase()] = false; });
+
+            let globalTime = 0;
+            let hitCooldown = false;
+
+            function saveGameSessionRecord(modeName, finalScore, levelOrWave) {
+                const title = activeDeckTitle || 'General Material';
+                const record = {
+                    id: Date.now(),
+                    deckTitle: title,
+                    mode: modeName,
+                    score: finalScore,
+                    progress: levelOrWave,
+                    date: new Date().toLocaleDateString()
+                };
+
+                gameHistory.unshift(record);
+                localStorage.setItem(getUserStorageKey('game_history'), JSON.stringify(gameHistory));
+            }
+
+            function animate() {
+                arcadeAnimFrame = requestAnimationFrame(animate);
+                globalTime += 0.03;
+
+                // If trivia modal is open (arcadeGameActive is true), freeze player movement, enemy updates, and projectiles completely
+                if (!arcadeGameActive) {
+                    let vx = joystickVector.x * 0.25;
+                    let vz = joystickVector.z * 0.25;
+
+                    if (keysPressed['arrowup'] || keysPressed['w']) vz -= 0.25;
+                    if (keysPressed['arrowdown'] || keysPressed['s']) vz += 0.25;
+                    if (keysPressed['arrowleft'] || keysPressed['a']) vx -= 0.25;
+                    if (keysPressed['arrowright'] || keysPressed['d']) vx += 0.25;
+
+                    playerGroup.position.x = Math.max(-22, Math.min(22, playerGroup.position.x + vx));
+                    playerGroup.position.z = Math.max(-2, Math.min(10, playerGroup.position.z + vz));
+                    playerGroup.rotation.z = -vx * 0.7;
+
+                    // Update Enemy Starfighters (Move in front side-to-side, increasing speed per level)
+                    enemies.forEach((enemy, idx) => {
+                        const speedFactor = enemy.speedMultiplier;
+                        enemy.group.position.x = Math.sin(globalTime * speedFactor + enemy.moveOffset) * (12 + idx * 3);
+                    });
+
+                    // Update Projectiles
+                    for (let i = projectiles.length - 1; i >= 0; i--) {
+                        const p = projectiles[i];
+                        p.position.add(p.userData.velocity);
+
+                        // Collision with player -> trigger trivia & lose life (ignored if postTriviaGracePeriod or hitCooldown is active)
+                        if (!hitCooldown && !postTriviaGracePeriod && p.position.distanceTo(playerGroup.position) < 1.5) {
+                            hitCooldown = true;
+                            scene.remove(p);
+                            projectiles.splice(i, 1);
+                            
+                            // Immediately pause game state and shooting loops while answering
+                            arcadeGameActive = true;
+
+                            triggerTriviaModal(() => {
+                                // Correct answer -> bonus points & resume with 2-second grace period
+                                arcadeScore += 200 * spaceInvaderLevel;
+                                document.getElementById('arcade-score-val').innerText = arcadeScore;
+                                arcadeGameActive = false;
+                                hitCooldown = false;
+                                
+                                postTriviaGracePeriod = true;
+                                setTimeout(() => {
+                                    postTriviaGracePeriod = false;
+                                }, 2000); // 2 full seconds of invulnerability & shooting pause after answering
+                            });
+
+                            spaceInvaderLives--;
+                            const livesEl = document.getElementById('si-lives');
+                            if (livesEl) livesEl.innerText = spaceInvaderLives;
+
+                            if (spaceInvaderLives <= 0) {
+                                if (spaceInvaderInterval) clearInterval(spaceInvaderInterval);
+                                clearInterval(shootInterval);
+                                cancelAnimationFrame(arcadeAnimFrame);
+                                saveGameSessionRecord("3D Space Invaders", arcadeScore, `Level ${spaceInvaderLevel}`);
+                                container.innerHTML = `
+                                    <div class="w-full h-full flex flex-col items-center justify-center p-6 space-y-6 glass-panel text-[var(--text-main)]">
+                                        <div class="w-20 h-20 rounded-3xl bg-rose-500/20 text-rose-500 flex items-center justify-center text-4xl shadow-inner">
+                                            <i class="fa-solid fa-skull-crossbones"></i>
+                                        </div>
+                                        <div class="space-y-1 text-center">
+                                            <h3 class="text-2xl font-black">Game Over!</h3>
+                                            <p class="text-xs text-[var(--text-muted)]">Your starfighter was shot down after 3 hits.</p>
+                                        </div>
+                                        <div class="p-4 rounded-2xl glass-pill border border-rose-500/30 text-center space-y-1">
+                                            <span class="text-xs text-purple-600 font-bold block">Final Arcade Score: ${arcadeScore} Points • Reached Level ${spaceInvaderLevel}</span>
+                                            <span class="text-[10px] text-amber-500 font-bold block">Set High Score: ${deckHighScores[activeDeckTitle] || arcadeScore} Points</span>
+                                        </div>
+                                        <button onclick="goToHome()" class="px-8 py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-lg apple-button">Return to Home</button>
+                                    </div>
+                                `;
+                                return;
+                            }
+
+                            setTimeout(() => { hitCooldown = false; }, 1500);
+                        } else if (p.position.z > 25) {
+                            scene.remove(p);
+                            projectiles.splice(i, 1);
+                        }
+                    }
+                }
+
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // ==========================================
+        // GAME 2: TOWER DEFENSE ARENA
+        // ==========================================
+        let towerHealth = 100;
+        let towerWave = 1;
+        let towerInterval = null;
+        let towerTimerInterval = null;
+        let towerCurrentQuestion = null;
+        let towerQuestionTime = 5;
+
+        function initTowerDefenseGame() {
+            const container = document.getElementById('arcade-canvas-container') || document.getElementById('arcade-game-container');
+            towerHealth = 100;
+            towerWave = 1;
+            if (towerInterval) clearInterval(towerInterval);
+            if (towerTimerInterval) clearInterval(towerTimerInterval);
+
+            container.innerHTML = `
+                <div class="w-full h-full p-6 flex flex-col justify-between relative bg-gradient-to-br from-indigo-900/30 via-purple-900/20 to-slate-900/50 backdrop-blur-md">
+                    <!-- Top Status Header -->
+                    <div class="flex items-center justify-between glass-pill p-4 rounded-2xl border border-[var(--border-subtle)] shadow-lg">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-500 flex items-center justify-center font-bold text-lg">
+                                <i class="fa-solid fa-chess-rook"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Tower Status</h4>
+                                <div class="w-36 md:w-48 bg-stone-200 dark:bg-stone-800 h-3 rounded-full overflow-hidden mt-1 border border-[var(--border-subtle)]">
+                                    <div id="td-health-bar" class="bg-gradient-to-r from-emerald-500 to-green-400 h-full rounded-full transition-all duration-300" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 text-xs font-extrabold">
+                            <span class="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20">HP: <span id="td-hp-val">100</span>/100</span>
+                            <span class="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-600 border border-purple-500/20">Wave: <span id="td-wave-val">1</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Active Trivia Defense Card -->
+                    <div id="td-question-card" class="glass-panel p-6 rounded-3xl border border-purple-500/30 shadow-2xl space-y-4 max-w-xl mx-auto w-full my-auto transition-all">
+                        <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+                            <span class="text-[10px] font-black uppercase text-purple-600 tracking-wider">Trivia Castle Shield</span>
+                            <div class="px-3 py-1 rounded-full bg-amber-500/15 text-amber-600 text-xs font-extrabold flex items-center space-x-1.5">
+                                <i class="fa-solid fa-clock"></i>
+                                <span><span id="td-q-timer">5</span>s</span>
+                            </div>
+                        </div>
+                        <h4 id="td-q-text" class="text-sm md:text-base font-extrabold leading-snug text-[var(--text-main)]">Loading question...</h4>
+                        <div id="td-q-options" class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Bottom Wave Info Footer -->
+                    <div class="text-center text-[10px] font-bold text-[var(--text-muted)] tracking-wider uppercase">
+                        Answer correctly before the 5s timer expires to defend your castle! Incorrect answers or timeouts deal 10 damage.
+                    </div>
+                </div>
+            `;
+
+            const controlsBar = document.getElementById('arcade-controls-bar');
+            controlsBar.innerHTML = `
+                <div class="flex items-center space-x-2 text-xs font-bold text-[var(--text-muted)]">
+                    <i class="fa-solid fa-shield-halved text-purple-500"></i>
+                    <span>Protect your tower by selecting the correct trivia options quickly!</span>
+                </div>
+            `;
+
+            loadNextTowerQuestion();
+        }
+
+        function loadNextTowerQuestion() {
+            if (towerHealth <= 0) return;
+            if (!currentQuizQuestions || currentQuizQuestions.length === 0) {
+                currentQuizQuestions = premadeQuizzes[0].questions;
+            }
+
+            towerCurrentQuestion = currentQuizQuestions[Math.floor(Math.random() * currentQuizQuestions.length)];
+            towerQuestionTime = 5;
+
+            const timerEl = document.getElementById('td-q-timer');
+            if (timerEl) timerEl.innerText = towerQuestionTime;
+
+            const textEl = document.getElementById('td-q-text');
+            if (textEl) textEl.innerText = towerCurrentQuestion.question;
+
+            const optsEl = document.getElementById('td-q-options');
+            if (optsEl) {
+                optsEl.innerHTML = towerCurrentQuestion.options.map(opt => `
+                    <button onclick="submitTowerDefenseAnswer('${opt.id}')" class="p-3 rounded-2xl glass-pill hover:bg-purple-600 hover:text-white border border-[var(--border-subtle)] text-xs font-bold text-left transition-all apple-button">
+                        <span class="opacity-70 mr-1.5">${opt.id}.</span> ${opt.text}
+                    </button>
+                `).join('');
+            }
+
+            if (towerTimerInterval) clearInterval(towerTimerInterval);
+            towerTimerInterval = setInterval(() => {
+                towerQuestionTime--;
+                const currentTimerEl = document.getElementById('td-q-timer');
+                if (currentTimerEl) currentTimerEl.innerText = towerQuestionTime;
+
+                if (towerQuestionTime <= 0) {
+                    clearInterval(towerTimerInterval);
+                    damageTower(10, "Time expired! Tower took 10 damage.");
+                    loadNextTowerQuestion();
+                }
+            }, 1000);
+        }
+
+        function submitTowerDefenseAnswer(optId) {
+            if (towerTimerInterval) clearInterval(towerTimerInterval);
+
+            if (optId === towerCurrentQuestion.answer) {
+                arcadeScore += 150;
+                towerWave++;
+                document.getElementById('arcade-score-val').innerText = arcadeScore;
+                const waveEl = document.getElementById('td-wave-val');
+                if (waveEl) waveEl.innerText = towerWave;
+                alertBoxCustom("Wave Cleared!", "+150 Points! Shield intact.");
+            } else {
+                damageTower(10, "Incorrect answer! Tower took 10 damage.");
+            }
+
+            if (towerHealth > 0) {
+                loadNextTowerQuestion();
+            }
+        }
+
+        function damageTower(amount, message) {
+            towerHealth = Math.max(0, towerHealth - amount);
+            const hpVal = document.getElementById('td-hp-val');
+            const hpBar = document.getElementById('td-health-bar');
+
+            if (hpVal) hpVal.innerText = towerHealth;
+            if (hpBar) hpBar.style.width = `${towerHealth}%`;
+
+            alertBoxCustom("Tower Damaged", message);
+
+            if (towerHealth <= 0) {
+                if (towerTimerInterval) clearInterval(towerTimerInterval);
+                const container = document.getElementById('arcade-canvas-container') || document.getElementById('arcade-game-container');
+                
+                const record = {
+                    id: Date.now(),
+                    deckTitle: activeDeckTitle || 'General Science',
+                    mode: 'Tower Defense',
+                    score: arcadeScore,
+                    progress: `Wave ${towerWave}`,
+                    date: new Date().toLocaleDateString()
+                };
+                gameHistory.unshift(record);
+                localStorage.setItem(getUserStorageKey('game_history'), JSON.stringify(gameHistory));
+
+                container.innerHTML = `
+                    <div class="w-full h-full flex flex-col items-center justify-center p-6 space-y-6 glass-panel text-[var(--text-main)]">
+                        <div class="w-20 h-20 rounded-3xl bg-rose-500/20 text-rose-500 flex items-center justify-center text-4xl shadow-inner">
+                            <i class="fa-solid fa-shield-cat"></i>
+                        </div>
+                        <div class="space-y-1 text-center">
+                            <h3 class="text-2xl font-black">Tower Destroyed!</h3>
+                            <p class="text-xs text-[var(--text-muted)]">Your castle health reached zero on Wave ${towerWave}.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl glass-pill border border-rose-500/30 text-center space-y-1">
+                            <span class="text-xs text-purple-600 font-bold block">Final Defense Score: ${arcadeScore} Points</span>
+                        </div>
+                        <button onclick="goToHome()" class="px-8 py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-lg apple-button">Return to Home</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ==========================================
+        // GAME 3: SPEED QUIZ RUSH
+        // ==========================================
+        let speedTimer = 30;
+        let speedInterval = null;
+        let speedQuestion = null;
+
+        function initSpeedQuizGame() {
+            const container = document.getElementById('arcade-canvas-container') || document.getElementById('arcade-game-container');
+            speedTimer = 30;
+            if (speedInterval) clearInterval(speedInterval);
+
+            container.innerHTML = `
+                <div class="w-full h-full p-6 flex flex-col justify-between relative bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-slate-900/50 backdrop-blur-md">
+                    <div class="flex items-center justify-between glass-pill p-4 rounded-2xl border border-[var(--border-subtle)] shadow-lg">
+                        <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Speed Rush Arena</span>
+                        <div class="px-4 py-1.5 rounded-xl bg-amber-500/20 text-amber-500 font-black text-sm">
+                            Time Left: <span id="speed-time-val">30</span>s
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-3xl border border-purple-500/30 shadow-2xl space-y-4 max-w-xl mx-auto w-full my-auto">
+                        <h4 id="speed-q-text" class="text-base font-black leading-snug">Loading question...</h4>
+                        <div id="speed-q-options" class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <!-- Options rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="text-center text-[10px] font-bold text-[var(--text-muted)] tracking-wider uppercase">
+                        Answer as many trivia questions correctly before the 30s timer runs out!
+                    </div>
+                </div>
+            `;
+
+            const controlsBar = document.getElementById('arcade-controls-bar');
+            controlsBar.innerHTML = `
+                <div class="flex items-center space-x-2 text-xs font-bold text-[var(--text-muted)]">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    <span>Quick responses reward higher streak multipliers!</span>
+                </div>
+            `;
+
+            loadNextSpeedQuestion();
+
+            speedInterval = setInterval(() => {
+                speedTimer--;
+                const tVal = document.getElementById('speed-time-val');
+                if (tVal) tVal.innerText = speedTimer;
+
+                if (speedTimer <= 0) {
+                    clearInterval(speedInterval);
+                    
+                    const record = {
+                        id: Date.now(),
+                        deckTitle: activeDeckTitle || 'General Material',
+                        mode: 'Speed Quiz',
+                        score: arcadeScore,
+                        progress: 'Completed 30s Rush',
+                        date: new Date().toLocaleDateString()
+                    };
+                    gameHistory.unshift(record);
+                    localStorage.setItem(getUserStorageKey('game_history'), JSON.stringify(gameHistory));
+
+                    container.innerHTML = `
+                        <div class="w-full h-full flex flex-col items-center justify-center p-6 space-y-6 glass-panel text-[var(--text-main)]">
+                            <div class="w-20 h-20 rounded-3xl bg-amber-500/20 text-amber-500 flex items-center justify-center text-4xl shadow-inner">
+                                <i class="fa-solid fa-stopwatch"></i>
+                            </div>
+                            <div class="space-y-1 text-center">
+                                <h3 class="text-2xl font-black">Time's Up!</h3>
+                                <p class="text-xs text-[var(--text-muted)]">Great rapid-fire round performance!</p>
+                            </div>
+                            <div class="p-4 rounded-2xl glass-pill border border-amber-500/30 text-center space-y-1">
+                                <span class="text-xs text-purple-600 font-bold block">Final Speed Score: ${arcadeScore} Points</span>
+                            </div>
+                            <button onclick="goToHome()" class="px-8 py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-lg apple-button">Return to Home</button>
+                        </div>
+                    `;
+                }
+            }, 1000);
+        }
